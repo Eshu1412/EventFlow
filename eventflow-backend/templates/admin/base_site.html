@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | EventFlow Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">
+    Event<span style="color: var(--ef-gold);">Flow</span>
+    <span style="font-size: 0.55rem; letter-spacing: 0.2em; vertical-align: middle; color: var(--ef-muted); margin-left: 8px; font-family: var(--ef-mono);">ADMIN</span>
+  </a>
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'admin/css/eventflow_theme.css' %}" />
+{% endblock %}
+
+{% block footer %}
+<div id="footer">
+  <p>
+    EventFlow Admin &mdash; CountryEdu Private Limited &copy; {% now "Y" %}
+  </p>
+</div>
+{% endblock %}
