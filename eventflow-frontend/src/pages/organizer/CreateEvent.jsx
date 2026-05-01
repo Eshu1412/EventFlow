@@ -51,8 +51,8 @@ export default function CreateEvent() {
           <Link to="/organizer" className="sidebar-nav-link"><LayoutDashboard size={17} /> Dashboard</Link>
           <Link to="/organizer/create" className="sidebar-nav-link active"><Plus size={17} /> Create Event</Link>
           <Link to="/organizer/registrations" className="sidebar-nav-link"><Users size={17} /> Registrations</Link>
-          <Link to="#" className="sidebar-nav-link"><BarChart2 size={17} /> Analytics</Link>
-          <Link to="#" className="sidebar-nav-link"><Settings size={17} /> Settings</Link>
+          <Link to="/organizer/analytics" className="sidebar-nav-link"><BarChart2 size={17} /> Analytics</Link>
+          <Link to="/organizer/settings" className="sidebar-nav-link"><Settings size={17} /> Settings</Link>
         </nav>
         <div className="sidebar-user">
           <div className="sidebar-avatar" style={{ background:"var(--color-accent)" }}>{name[0]}</div>

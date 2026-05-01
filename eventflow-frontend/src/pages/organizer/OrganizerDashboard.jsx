@@ -64,8 +64,8 @@ export default function OrganizerDashboard() {
     { to:"/organizer",               icon:LayoutDashboard, label:"Dashboard",     active:true },
     { to:"/organizer/create",        icon:Plus,            label:"Create Event"  },
     { to:"/organizer/registrations", icon:Users,           label:"Registrations" },
-    { to:"#",                        icon:BarChart2,       label:"Analytics"     },
-    { to:"#",                        icon:Settings,        label:"Settings"      },
+    { to:"/organizer/analytics",     icon:BarChart2,       label:"Analytics"     },
+    { to:"/organizer/settings",      icon:Settings,        label:"Settings"      },
   ];
 
   return (

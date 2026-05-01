@@ -66,8 +66,8 @@ export default function ManageRegistrations() {
     { to:"/organizer",               icon:LayoutDashboard, label:"Dashboard"      },
     { to:"/organizer/create",        icon:Plus,            label:"Create Event"   },
     { to:"/organizer/registrations", icon:Users,           label:"Registrations", active:true },
-    { to:"#",                        icon:BarChart2,       label:"Analytics"      },
-    { to:"#",                        icon:Settings,        label:"Settings"       },
+    { to:"/organizer/analytics",     icon:BarChart2,       label:"Analytics"      },
+    { to:"/organizer/settings",      icon:Settings,        label:"Settings"       },
   ];
 
   return (

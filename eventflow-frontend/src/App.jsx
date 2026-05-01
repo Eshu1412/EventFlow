@@ -17,6 +17,8 @@ import BookingHistory      from "./pages/user/BookingHistory";
 import OrganizerDashboard  from "./pages/organizer/OrganizerDashboard";
 import CreateEvent         from "./pages/organizer/CreateEvent";
 import ManageRegistrations from "./pages/organizer/ManageRegistrations";
+import OrganizerAnalytics  from "./pages/organizer/OrganizerAnalytics";
+import OrganizerSettings   from "./pages/organizer/OrganizerSettings";
 import AdminPanel          from "./pages/admin/AdminPanel";
 import ManageUsers         from "./pages/admin/ManageUsers";
 import ManageEvents        from "./pages/admin/ManageEvents";
@@ -53,6 +55,8 @@ export default function App() {
                 <Route path="/organizer"               element={<OrganizerDashboard />} />
                 <Route path="/organizer/create"        element={<CreateEvent />} />
                 <Route path="/organizer/registrations" element={<ManageRegistrations />} />
+                <Route path="/organizer/analytics"     element={<OrganizerAnalytics />} />
+                <Route path="/organizer/settings"      element={<OrganizerSettings />} />
               </Route>
 
               {/* Admin */}
