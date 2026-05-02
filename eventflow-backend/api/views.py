@@ -458,6 +458,8 @@ def send_registration_otp(request):
     </div>
     """
 
+    email_sent = False
+    email_error = None
     try:
         send_mail(
             subject="Your EventFlow verification code",
@@ -467,9 +469,35 @@ def send_registration_otp(request):
             html_message=html_body,
             fail_silently=False,
         )
+        email_sent = True
     except Exception as e:
-        otp_obj.delete()
-        return Response({'error': f'Failed to send email: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        email_error = str(e)
+
+    if not email_sent:
+        if settings.DEBUG:
+            # ── Dev-mode fallback ──────────────────────────────────────────────
+            # Email delivery failed (e.g. Resend sandbox domain restriction).
+            # In development we return the OTP directly so registration can
+            # proceed without a verified email sender domain.
+            import logging
+            logging.getLogger(__name__).warning(
+                "OTP email delivery failed (dev mode — returning OTP in response): %s", email_error
+            )
+            return Response({
+                'message': (
+                    '⚠️ Dev mode: email could not be delivered '
+                    '(Resend sandbox only allows sending to your own verified address). '
+                    'Use the OTP below to continue.'
+                ),
+                'dev_otp': otp_obj.otp,
+            }, status=status.HTTP_200_OK)
+        else:
+            # Production: email must succeed — delete the OTP and surface the error
+            otp_obj.delete()
+            return Response(
+                {'error': f'Failed to send email: {email_error}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     return Response({'message': 'OTP sent to your email. Valid for 10 minutes.'}, status=status.HTTP_200_OK)
 

@@ -20,6 +20,7 @@ export default function Register() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError]   = useState("");
   const [loading, setLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState("");  // dev-mode fallback OTP
   const navigate  = useNavigate();
   const { login } = useAuth();
 
@@ -28,9 +29,15 @@ export default function Register() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
+    setDevOtp("");
     setLoading(true);
     try {
-      await sendOtp({ email: form.email });
+      const { data } = await sendOtp({ email: form.email });
+      // Dev-mode fallback: backend couldn't deliver email, returns OTP directly
+      if (data?.dev_otp) {
+        setDevOtp(data.dev_otp);
+        setOtp(data.dev_otp);  // auto-fill so user doesn't have to type it
+      }
       setStep("otp");
     } catch (err) {
       setError(err.response?.data?.error || "Failed to send OTP.");
@@ -218,11 +225,32 @@ export default function Register() {
             </motion.form>
           ) : (
             <motion.form variants={item} onSubmit={submit} className="form-stack">
-              <div className="form-group">
-                <label className="form-label">Verify Email</label>
-                <p style={{ fontSize: "0.85rem", color: "var(--muted)", marginBottom: "0.5rem" }}>
+              {devOtp ? (
+                // Dev-mode notice: email couldn't be delivered, OTP returned in API response
+                <div style={{
+                  background: "rgba(184,146,78,0.1)",
+                  border: "1px solid rgba(184,146,78,0.4)",
+                  borderRadius: "var(--r-sm)",
+                  padding: "0.875rem 1rem",
+                  fontSize: "0.82rem",
+                  lineHeight: 1.6,
+                }}>
+                  <div style={{ fontWeight: 700, color: "var(--gold)", marginBottom: "0.3rem" }}>⚠️ Dev Mode — Email not delivered</div>
+                  <div style={{ color: "var(--fg-sub)" }}>
+                    Resend sandbox can only send to your own verified address.
+                    Your OTP has been auto-filled below. In production, configure a verified sender domain.
+                  </div>
+                  <div style={{ marginTop: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "1.1rem", color: "var(--gold)", letterSpacing: "0.15em" }}>
+                    OTP: {devOtp}
+                  </div>
+                </div>
+              ) : (
+                <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
                   We've sent a 6-digit code to <strong>{form.email}</strong>
                 </p>
+              )}
+              <div className="form-group">
+                <label className="form-label">Verification Code</label>
                 <input
                   name="otp" type="text" className="form-control"
                   placeholder="Enter 6-digit OTP"
