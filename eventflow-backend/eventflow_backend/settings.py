@@ -171,7 +171,7 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 # ── Email / SMTP ──────────────────────────────────────────────────────────────
-EMAIL_BACKEND    = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND    = "api.email_backend.ResendHTTPEmailBackend"
 EMAIL_HOST       = os.environ.get("EMAIL_HOST",      "smtp.gmail.com")
 EMAIL_PORT       = int(os.environ.get("EMAIL_PORT",  "587"))
 EMAIL_USE_TLS    = os.environ.get("EMAIL_USE_TLS",   "True") == "True"
