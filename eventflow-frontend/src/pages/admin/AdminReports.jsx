@@ -399,7 +399,7 @@ export default function AdminReports() {
         ) : (
           <>
             {/* ── Row 1: Summary KPI cards ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div className="analytics-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
               {[
                 { label: "Total Revenue",  value: formatPrice(totalRevenue), color: "var(--gold)", Icon: DollarSign },
                 { label: "Total Bookings", value: totalBookings, color: "#34d399", Icon: Ticket },
@@ -421,7 +421,7 @@ export default function AdminReports() {
             </div>
 
             {/* ── Row 2: Interactive SVG Charts ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div className="analytics-grid analytics-grid-two" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "2rem" }}>
               {/* Event Categories Pie */}
               <div style={cardStyle}>
                 <InteractivePieChart data={categoryChartData} title="Events by Category" />
@@ -434,7 +434,7 @@ export default function AdminReports() {
             </div>
 
             {/* ── Row 3: Bar Charts ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div className="analytics-grid analytics-grid-three" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1.25rem", marginBottom: "2rem" }}>
               <div style={cardStyle}>
                 <InteractiveBarChart data={topEventsChartData} title="Top Events by Tickets Sold" icon={Award} />
               </div>

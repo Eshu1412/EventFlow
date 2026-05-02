@@ -84,6 +84,8 @@ export default function Login() {
       {/* Form panel */}
       <motion.div className="auth-form-panel" variants={slideIn} initial="hidden" animate="visible">
         <div style={{ maxWidth:400, width:"100%", margin:"0 auto" }}>
+          <Link to="/" className="auth-mobile-brand">Event<em>Flow</em></Link>
+
           <motion.h2 variants={item} className="auth-form-title">WELCOME BACK</motion.h2>
           <motion.p variants={item} className="auth-form-sub">
             No account?{" "}<Link to="/register">Create one free</Link>

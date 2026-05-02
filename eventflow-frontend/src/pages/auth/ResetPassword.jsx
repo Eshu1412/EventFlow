@@ -112,6 +112,7 @@ export default function ResetPassword() {
         variants={{ hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } }}
         initial="hidden" animate="visible">
         <div style={{ maxWidth: 400, width: "100%", margin: "0 auto" }}>
+          <Link to="/" className="auth-mobile-brand">Event<em>Flow</em></Link>
 
           {/* Invalid token check */}
           {!token ? (

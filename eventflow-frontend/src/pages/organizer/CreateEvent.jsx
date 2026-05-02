@@ -132,7 +132,7 @@ export default function CreateEvent() {
               {step === 1 && (
                 <div style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
                   <h3>Date & Venue</h3>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem" }}>
+                  <div className="form-two-col" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem" }}>
                     <div className="form-group">
                       <label className="form-label">Date *</label>
                       <input name="date" type="date" className="form-control" value={form.date} onChange={handle} />
@@ -167,7 +167,7 @@ export default function CreateEvent() {
                     <label className="form-label">Ticket Name</label>
                     <input name="ticket_name" className="form-control" value={form.ticket_name} onChange={handle} />
                   </div>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem" }}>
+                  <div className="form-two-col" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem" }}>
                     <div className="form-group">
                       <label className="form-label">Price (INR) <span style={{ fontWeight:400, color:"var(--color-text-muted)" }}>— 0 for free</span></label>
                       <input name="price" type="number" min="0" className="form-control" placeholder="0.00"
@@ -211,7 +211,7 @@ export default function CreateEvent() {
               )}
 
               {/* Navigation */}
-              <div style={{ display:"flex", justifyContent:"space-between", marginTop:"2rem", paddingTop:"1.25rem", borderTop:"1px solid var(--color-border)" }}>
+              <div className="form-nav-row" style={{ display:"flex", justifyContent:"space-between", marginTop:"2rem", paddingTop:"1.25rem", borderTop:"1px solid var(--color-border)" }}>
                 <button className="btn btn-ghost" onClick={() => setStep(s => Math.max(0, s-1))} disabled={step===0}>
                   <ArrowLeft size={15} /> Back
                 </button>
@@ -228,7 +228,7 @@ export default function CreateEvent() {
             </div>
 
             {/* Preview card */}
-            <div style={{ width:260, flexShrink:0 }}>
+            <div className="event-preview-panel" style={{ width:260, flexShrink:0 }}>
               <p style={{ fontSize:".8rem", color:"var(--color-text-muted)", marginBottom:".75rem", fontWeight:600, textTransform:"uppercase", letterSpacing:".05em" }}>
                 <Eye size={13} style={{ display:"inline", marginRight:".35rem" }} /> Live Preview
               </p>

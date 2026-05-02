@@ -1,5 +1,5 @@
 // src/pages/user/EventList.jsx
-import { useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import EventCard from "../../components/EventCard";
@@ -7,6 +7,43 @@ import { getAllEvents } from "../../api/events";
 import { SlidersHorizontal, Search, X, AlertCircle, RefreshCw } from "lucide-react";
 
 const CATEGORIES = ["Music", "Tech", "Sports", "Food", "Art", "Business"];
+
+const CATEGORY_ALIASES = {
+  technology: "tech",
+  technologies: "tech",
+  technical: "tech",
+  conference: "business",
+  conferences: "business",
+  workshop: "business",
+  workshops: "business",
+  culinary: "food",
+  dining: "food",
+  arts: "art",
+};
+
+const normalizeText = (value) => String(value || "").trim().toLowerCase();
+const normalizeCategory = (value) => {
+  const normalized = normalizeText(value);
+  return CATEGORY_ALIASES[normalized] || normalized;
+};
+
+const formatCategoryLabel = (value) => {
+  const normalized = normalizeCategory(value);
+  const known = CATEGORIES.find(c => normalizeCategory(c) === normalized);
+  if (known) return known;
+  return String(value || "Other")
+    .trim()
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, char => char.toUpperCase());
+};
+
+const extractEvents = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.results)) return payload.results;
+  if (Array.isArray(payload?.events)) return payload.events;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
 
 /* ── Skeleton card shown while loading ─────────────────────── */
 function SkeletonCard() {
@@ -30,17 +67,19 @@ function SkeletonCard() {
 }
 
 export default function EventList() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initCat = searchParams.get("category");
   const initSearch = searchParams.get("search") || searchParams.get("city") || "";
 
   const [events,  setEvents]  = useState([]);       // ← start EMPTY, not MOCK
   const [loading, setLoading] = useState(true);     // ← loading state
   const [error,   setError]   = useState("");       // ← error state
-  const [cats,    setCats]    = useState(initCat ? [initCat] : []);
+  const [cats,    setCats]    = useState(initCat ? [normalizeCategory(initCat)] : []);
   const [search,  setSearch]  = useState(initSearch);
   const [sort,    setSort]    = useState("date");
   const [page,    setPage]    = useState(1);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterRef = useRef(null);
   const PER_PAGE = 6;
 
   const fetchEvents = () => {
@@ -48,7 +87,7 @@ export default function EventList() {
     setError("");
     getAllEvents()
       .then(r => {
-        const data = Array.isArray(r.data) ? r.data : [];
+        const data = extractEvents(r.data);
         setEvents(data);
       })
       .catch(() => setError("Could not load events. Please try again."))
@@ -60,19 +99,57 @@ export default function EventList() {
   // Sync if URL changes while on page
   useEffect(() => {
     const qCat = searchParams.get("category");
-    if (qCat) setCats([qCat]);
+    setCats(qCat ? [normalizeCategory(qCat)] : []);
     const qSearch = searchParams.get("search") || searchParams.get("city");
-    if (qSearch) setSearch(qSearch);
+    setSearch(qSearch || "");
+    setPage(1);
   }, [searchParams]);
 
   const toggleCat = (c) => {
-    setCats(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
+    const normalized = normalizeCategory(c);
+    setCats(prev => prev.includes(normalized) ? prev.filter(x => x !== normalized) : [...prev, normalized]);
     setPage(1);
   };
 
+  const clearFilters = () => {
+    setCats([]);
+    setSearch("");
+    setPage(1);
+    setSearchParams({});
+  };
+
+  const openMobileFilters = () => {
+    setFiltersOpen(true);
+    requestAnimationFrame(() => {
+      filterRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  const categoryOptions = useMemo(() => {
+    const options = new Map(CATEGORIES.map(c => [normalizeCategory(c), c]));
+    events.forEach(event => {
+      const normalized = normalizeCategory(event.category);
+      if (normalized && !options.has(normalized)) {
+        options.set(normalized, formatCategoryLabel(event.category));
+      }
+    });
+    return Array.from(options, ([value, label]) => ({ value, label }));
+  }, [events]);
+
   const filtered = events
-    .filter(e => cats.length === 0 || cats.includes(e.category))
-    .filter(e => e.title?.toLowerCase().includes(search.toLowerCase()))
+    .filter(e => cats.length === 0 || cats.includes(normalizeCategory(e.category)))
+    .filter(e => {
+      const query = normalizeText(search);
+      if (!query) return true;
+      return [
+        e.title,
+        e.category,
+        e.location,
+        e.venue,
+        e.organizer_name,
+        e.description,
+      ].some(value => normalizeText(value).includes(query));
+    })
     .sort((a, b) =>
       sort === "price"
         ? (a.price || 0) - (b.price || 0)
@@ -93,10 +170,41 @@ export default function EventList() {
       `}</style>
 
       <Navbar />
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem", display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+      <div className="events-layout">
+        <button
+          type="button"
+          className="mobile-filter-toggle"
+          onClick={openMobileFilters}
+          aria-expanded={filtersOpen}
+          aria-controls="event-filter-panel"
+        >
+          <Search size={16} />
+          Search & Filters
+          {(cats.length > 0 || search) && <span>{cats.length + (search ? 1 : 0)}</span>}
+        </button>
 
         {/* ── Filter Sidebar ── */}
-        <aside className="card filter-sidebar" style={{ padding: 0 }}>
+        <aside
+          id="event-filter-panel"
+          ref={filterRef}
+          className={`card filter-sidebar ${filtersOpen ? "open" : ""}`}
+          style={{ padding: 0 }}
+        >
+          <div className="filter-mobile-head">
+            <div>
+              <div className="filter-mobile-title">Search & Filters</div>
+              <div className="filter-mobile-sub">Refine events by keyword, category, or sort order</div>
+            </div>
+            <button
+              type="button"
+              className="filter-close-btn"
+              aria-label="Close filters"
+              onClick={() => setFiltersOpen(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
+
           <div className="filter-section">
             <div className="filter-title">Search</div>
             <div style={{ position: "relative" }}>
@@ -113,10 +221,10 @@ export default function EventList() {
 
           <div className="filter-section">
             <div className="filter-title">Category</div>
-            {CATEGORIES.map(c => (
-              <label key={c} className="checkbox-row">
-                <input type="checkbox" checked={cats.includes(c)} onChange={() => toggleCat(c)} />
-                {c}
+            {categoryOptions.map(({ value, label }) => (
+              <label key={value} className="checkbox-row">
+                <input type="checkbox" checked={cats.includes(value)} onChange={() => toggleCat(value)} />
+                {label}
               </label>
             ))}
           </div>
@@ -131,7 +239,7 @@ export default function EventList() {
 
           {cats.length > 0 && (
             <div className="filter-section">
-              <button className="btn btn-ghost btn-sm" style={{ color: "var(--color-primary)" }} onClick={() => setCats([])}>
+              <button className="btn btn-ghost btn-sm" style={{ color: "var(--color-primary)" }} onClick={clearFilters}>
                 <X size={14} /> Clear Filters
               </button>
             </div>
@@ -196,8 +304,8 @@ export default function EventList() {
               <p style={{ fontSize: ".95rem" }}>
                 {events.length === 0 ? "No events available yet." : "No events match your filters."}
               </p>
-              {cats.length > 0 && (
-                <button className="btn btn-ghost btn-sm" style={{ marginTop: ".75rem", color: "var(--gold)" }} onClick={() => setCats([])}>
+              {(cats.length > 0 || search) && (
+                <button className="btn btn-ghost btn-sm" style={{ marginTop: ".75rem", color: "var(--gold)" }} onClick={clearFilters}>
                   Clear filters
                 </button>
               )}

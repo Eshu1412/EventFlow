@@ -143,6 +143,8 @@ export default function Register() {
         animate="visible"
       >
         <div style={{ maxWidth: 420, width: "100%", margin: "0 auto" }}>
+          <Link to="/" className="auth-mobile-brand">Event<em>Flow</em></Link>
+
           <motion.h2 variants={item} className="auth-form-title">CREATE ACCOUNT</motion.h2>
           <motion.p variants={item} className="auth-form-sub">
             Already have one?{" "}

@@ -267,7 +267,7 @@ export default function OrganizerAnalytics() {
           </div>
         ) : (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div className="analytics-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
               {[
                 { label: "Total Revenue",  value: formatPrice(totalRevenue), color: "var(--gold)", Icon: DollarSign },
                 { label: "Tickets Sold",   value: confirmedBookings, color: "#34d399", Icon: Ticket },
@@ -288,7 +288,7 @@ export default function OrganizerAnalytics() {
               ))}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div className="analytics-grid analytics-grid-wide" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem", marginBottom: "2rem" }}>
               <div style={cardStyle}>
                 <InteractivePieChart data={revenueChartData} title="Revenue by Category" />
               </div>

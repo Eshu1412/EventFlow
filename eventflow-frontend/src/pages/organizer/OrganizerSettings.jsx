@@ -119,7 +119,7 @@ export default function OrganizerSettings() {
             <div className="alert alert-error" style={{ marginBottom: "1.5rem" }}><AlertCircle size={15} /> {error}</div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div className="profile-layout" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
             {/* Avatar card */}
             <div className="card card-body" style={{ textAlign: "center" }}>
               <div style={{

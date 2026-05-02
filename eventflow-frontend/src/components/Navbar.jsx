@@ -1,14 +1,16 @@
 // src/components/Navbar.jsx
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => { logout(); navigate("/"); };
+  const handleLogout = () => { setMenuOpen(false); logout(); navigate("/"); };
 
   const dashboardLink = () => {
     if (!user) return null;
@@ -21,30 +23,42 @@ export default function Navbar() {
         Event<em>Flow</em>
       </Link>
 
-      <div className="nav-links">
-        <Link to="/events" className="nav-link">Events</Link>
-        <Link to="/#categories" className="nav-link">Categories</Link>
-        <Link to="/#about" className="nav-link">About</Link>
-      </div>
+      <button
+        type="button"
+        className="mobile-menu-btn"
+        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <ThemeToggle />
+      <div className={`nav-content ${menuOpen ? 'open' : ''}`}>
+        <div className="nav-links">
+          <Link to="/events" className="nav-link" onClick={() => setMenuOpen(false)}>Events</Link>
+          <Link to="/#categories" className="nav-link" onClick={() => setMenuOpen(false)}>Categories</Link>
+          <Link to="/#about" className="nav-link" onClick={() => setMenuOpen(false)}>About</Link>
+        </div>
 
-        {user ? (
-          <>
-            <Link to={dashboardLink()} className="btn btn-ghost btn-sm">
-              <LayoutDashboard size={14} /> Dashboard
-            </Link>
-            <button onClick={handleLogout} className="btn btn-outline btn-sm">
-              <LogOut size={14} /> Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="btn btn-ghost btn-sm">Sign In</Link>
-            <Link to="/register" className="btn btn-primary btn-sm">Get Started</Link>
-          </>
-        )}
+        <div className="nav-actions">
+          <ThemeToggle />
+
+          {user ? (
+            <>
+              <Link to={dashboardLink()} className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>
+                <LayoutDashboard size={14} /> Dashboard
+              </Link>
+              <button onClick={handleLogout} className="btn btn-outline btn-sm">
+                <LogOut size={14} /> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>Sign In</Link>
+              <Link to="/register" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>Get Started</Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

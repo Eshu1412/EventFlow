@@ -128,7 +128,7 @@ export default function UserProfile() {
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div className="profile-layout" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
             {/* Avatar card */}
             <div className="card card-body" style={{ textAlign: "center" }}>
               <div style={{

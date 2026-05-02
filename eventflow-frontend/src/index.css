@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DESIGN SYSTEM TOKENS
    Aesthetic: Dark Editorial Luxury
    Display: Bebas Neue  |  Body: DM Sans  |  Mono: DM Mono
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 :root {
-  /* ── Dark defaults ── */
+  /* â”€â”€ Dark defaults â”€â”€ */
   --ink: #0c0d0f;
   --ink-2: #141518;
   --ink-3: #1c1e24;
@@ -64,10 +64,10 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ══════════════════════════════════════════════════════
-   LIGHT MODE — Warm Editorial Print
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   LIGHT MODE â€” Warm Editorial Print
    Parchment paper meets luxury magazine
-══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 [data-theme="light"] {
   --ink: #faf8f3;
   --ink-2: #f2ede4;
@@ -106,7 +106,7 @@
   --shadow-coral: 0 0 40px rgba(201, 68, 48, 0.16);
 }
 
-/* Global theme transition — smooth swap on theme change only */
+/* Global theme transition â€” smooth swap on theme change only */
 /* Applied specifically to properties that change with theme, not layout/transform */
 *:not([style*="transition"]),
 *::before,
@@ -130,7 +130,7 @@ body::before {
   transition: none !important;
 }
 
-/* ── RESET & BASE ── */
+/* â”€â”€ RESET & BASE â”€â”€ */
 *,
 *::before,
 *::after {
@@ -202,7 +202,7 @@ main {
   padding-top: var(--navbar-h);
 }
 
-/* ── SCROLLBAR ── */
+/* â”€â”€ SCROLLBAR â”€â”€ */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -220,9 +220,9 @@ main {
   background: var(--gold);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    ANIMATIONS
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 @keyframes fadeUp {
   from {
@@ -312,7 +312,7 @@ main {
   }
 }
 
-/* Page enter — used by PageTransition.jsx */
+/* Page enter â€” used by PageTransition.jsx */
 @keyframes ef-page-enter {
   from {
     opacity: 0;
@@ -327,9 +327,9 @@ main {
   }
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    TAILWIND @theme
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 @theme {
   --font-display: 'Bebas Neue', sans-serif;
@@ -341,9 +341,9 @@ main {
   --color-surface: #f5f3ee;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    BUTTONS
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .btn {
   display: inline-flex;
@@ -439,9 +439,9 @@ main {
   width: 100%;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    NAVBAR
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .navbar {
   position: fixed;
@@ -508,9 +508,9 @@ main {
   width: 100%;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    TICKER / MARQUEE
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .ticker-wrap {
   background: var(--ticker-bg);
@@ -540,9 +540,9 @@ main {
   opacity: 0.4;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HERO
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .hero {
   min-height: 92vh;
@@ -726,9 +726,9 @@ main {
   background: var(--gold-light);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CATEGORY SECTION
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .section {
   padding: 6rem 5vw;
@@ -838,9 +838,9 @@ main {
   letter-spacing: 0.1em;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EVENT CARD (Ticket Style)
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .events-grid {
   display: grid;
@@ -1037,9 +1037,9 @@ main {
   border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HOW IT WORKS
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .how-grid {
   display: grid;
@@ -1096,9 +1096,9 @@ main {
   line-height: 1.7;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    NEWSLETTER / CTA BAND
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .cta-band {
   background: var(--card-bg);
@@ -1189,9 +1189,9 @@ main {
   background: var(--gold-light);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    FOOTER
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .footer {
   background: var(--ink);
@@ -1233,9 +1233,9 @@ main {
   color: var(--gold);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    AUTH PAGES
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .auth-layout {
   min-height: 100vh;
@@ -1274,6 +1274,20 @@ main {
 }
 
 .auth-visual-brand em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.auth-mobile-brand {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+  margin-bottom: 2.25rem;
+}
+
+.auth-mobile-brand em {
   font-style: normal;
   color: var(--gold);
 }
@@ -1450,9 +1464,9 @@ select.form-control {
   background: var(--border);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DASHBOARD / SIDEBAR LAYOUT
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .app-layout {
   display: flex;
@@ -1757,6 +1771,29 @@ select.form-control {
   padding: 1.25rem;
 }
 
+.mobile-filter-toggle,
+.filter-mobile-head {
+  display: none;
+}
+
+.filter-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.filter-close-btn:hover {
+  border-color: var(--border-gold);
+  color: var(--gold);
+}
+
 .filter-title {
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -1824,9 +1861,9 @@ select.form-control {
   color: var(--ink);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MISC UTILITIES
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .loading-spinner {
   width: 18px;
@@ -1909,10 +1946,10 @@ select.form-control {
   }
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    MISSING UTILITY CLASSES
    Bridge between design tokens and component usage
-═══════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Color aliases */
 :root {
@@ -2275,4 +2312,700 @@ tr:hover td {
 .btn-danger:hover {
   background: rgba(248, 113, 113, 0.22);
   color: #fca5a5;
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RESPONSIVE LAYOUT FIXES
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* Mobile Menu Button - Hidden on Desktop */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Nav Actions Container */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* Event List Layout */
+.events-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Media Queries for Mobile/Tablet */
+@media (max-width: 900px) {
+  /* Stack EventList sidebar and main content */
+  .events-layout {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+  
+  .filter-sidebar {
+    width: 100%;
+  }
+
+  /* Make Grid 3 stack on mobile */
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Show hamburger menu */
+  .mobile-menu-btn {
+    display: block;
+    z-index: 1001;
+  }
+
+  /* Hide nav content by default and style as a full-screen or dropdown menu */
+  .nav-content {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: var(--navbar-h);
+    left: 0;
+    width: 100%;
+    background: var(--body-bg);
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+  }
+
+  .nav-content.open {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .nav-actions {
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+
+  /* Event Detail Responsive */
+  .event-detail-layout {
+    flex-direction: column;
+    padding: 1rem !important;
+  }
+  .event-detail-sidebar {
+    width: 100% !important;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   MOBILE APP-WIDE RESPONSIVE PASS
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+@media (max-width: 900px) {
+  :root {
+    --navbar-h: 64px;
+  }
+
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  main {
+    padding-top: 0;
+  }
+
+  .btn {
+    min-height: 42px;
+    text-align: center;
+  }
+
+  .navbar {
+    height: var(--navbar-h);
+    padding: 0 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.45rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--r-sm);
+  }
+
+  .mobile-menu-btn:hover {
+    background: var(--input-bg);
+  }
+
+  .nav-content {
+    position: fixed;
+    top: var(--navbar-h);
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: calc(100dvh - var(--navbar-h));
+    overflow-y: auto;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+
+  .nav-links,
+  .nav-actions {
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    border-radius: var(--r-sm);
+  }
+
+  .nav-content .btn,
+  .nav-actions .btn {
+    width: 100%;
+  }
+
+  .hero {
+    min-height: auto;
+    margin-top: var(--navbar-h) !important;
+  }
+
+  .hero-left {
+    padding: 3rem 1rem 2.5rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.68rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+    line-height: 0.95;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title .line-outline {
+    -webkit-text-stroke-width: 1px;
+  }
+
+  .hero-sub {
+    max-width: none;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-search,
+  .cta-form {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .hero-search .divider {
+    width: auto;
+    height: 1px;
+    margin: 0 12px;
+  }
+
+  .hero-search input,
+  .hero-search select,
+  .hero-search button,
+  .cta-form input,
+  .cta-form button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .hero-search button,
+  .cta-form button {
+    justify-content: center;
+    padding: 0 1rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-stats {
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .hero-stat-number {
+    font-size: 1.45rem;
+  }
+
+  .hero-stat-label {
+    font-size: 0.66rem;
+  }
+
+  .ticker-wrap {
+    height: 32px;
+  }
+
+  .ticker-item {
+    font-size: 0.78rem;
+    padding: 0 1rem;
+  }
+
+  .section,
+  .section-sm {
+    padding: 3rem 1rem;
+  }
+
+  .section-title {
+    font-size: 2.6rem;
+    line-height: 0.98;
+  }
+
+  .section-sub {
+    margin-bottom: 1.75rem;
+  }
+
+  .category-grid,
+  .events-grid,
+  .grid-3,
+  .stats-grid,
+  .analytics-kpi-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .category-chip,
+  .how-step,
+  .card-body,
+  .stat-card,
+  .filter-card,
+  .booking-card-sticky,
+  .booking-sticky {
+    padding: 1rem;
+  }
+
+  .event-card-img {
+    height: 180px;
+  }
+
+  .event-card-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .event-card-footer .btn {
+    width: 100%;
+  }
+
+  .how-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-band {
+    padding: 3rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .cta-band::before {
+    font-size: 6rem;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .auth-layout {
+    min-height: 100dvh;
+  }
+
+  .auth-form-panel {
+    min-height: 100dvh;
+    justify-content: flex-start;
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .auth-mobile-brand {
+    display: inline-flex;
+  }
+
+  .auth-form-title {
+    font-size: 1.8rem;
+  }
+
+  .auth-stats {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  .sidebar {
+    position: sticky;
+    inset: auto;
+    top: 0;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    transform: none;
+    z-index: 1002;
+    border-right: 0;
+    border-bottom: 1px solid var(--sidebar-border);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sidebar-logo {
+    padding: 0.85rem 1rem 0.65rem;
+  }
+
+  .sidebar-logo-text {
+    font-size: 1.35rem;
+  }
+
+  .sidebar-nav {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0 1rem 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar-nav-section {
+    display: none;
+  }
+
+  .sidebar-nav-link {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 9px 12px;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+  }
+
+  .sidebar-user {
+    padding: 0.75rem 1rem;
+  }
+
+  .sidebar-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .main-content {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .page-header > div:last-child,
+  .page-header > a,
+  .page-header > button {
+    align-self: stretch;
+  }
+
+  .page-header > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .page-header > div:first-child {
+    display: block;
+  }
+
+  .page-header .btn,
+  .page-header > .btn {
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.85rem;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  .page-subtitle {
+    line-height: 1.5;
+  }
+
+  .table-wrap {
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table,
+  table {
+    min-width: 640px;
+  }
+
+  th,
+  td,
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+  }
+
+  .events-layout {
+    width: 100%;
+    padding: calc(var(--navbar-h) + 1rem) 1rem 2rem;
+  }
+
+  .events-layout > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-sidebar {
+    position: static;
+    max-height: none;
+    width: 100%;
+    scroll-margin-top: calc(var(--navbar-h) + 0.75rem);
+  }
+
+  .mobile-filter-toggle {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 1rem;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-gold);
+    background: rgba(200, 169, 110, 0.1);
+    color: var(--gold);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-filter-toggle span {
+    min-width: 22px;
+    height: 22px;
+    border-radius: var(--r-full);
+    background: var(--gold);
+    color: var(--body-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    margin-left: 0.15rem;
+  }
+
+  .filter-sidebar:not(.open) {
+    display: none;
+  }
+
+  .filter-mobile-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-mobile-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    color: var(--fg);
+  }
+
+  .filter-mobile-sub {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .event-detail-layout {
+    width: 100%;
+    gap: 1.5rem !important;
+  }
+
+  .event-detail-main {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .booking-card-sticky,
+  .booking-sticky {
+    position: static;
+  }
+
+  .profile-layout,
+  .form-two-col,
+  .analytics-grid,
+  .analytics-grid-two,
+  .analytics-grid-three,
+  .analytics-grid-wide {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .steps-bar {
+    align-items: stretch;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .step-item {
+    flex: 0 0 118px;
+  }
+
+  .step-col {
+    align-items: flex-start;
+  }
+
+  .step-label {
+    white-space: normal;
+  }
+
+  .step-connector {
+    display: none;
+  }
+
+  .upload-zone {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-nav-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-nav-row .btn,
+  .event-preview-panel {
+    width: 100% !important;
+  }
+
+  .booking-row {
+    align-items: stretch !important;
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+
+  .booking-actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .booking-actions .btn {
+    flex: 1 1 120px;
+  }
+
+  .alert {
+    align-items: flex-start;
+    line-height: 1.45;
+  }
+
+  .card,
+  .stat-card {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-title {
+    font-size: 3.25rem;
+  }
+
+  .section-title {
+    font-size: 2.15rem;
+  }
+
+  .hero-stats {
+    flex-direction: column;
+  }
+
+  .page-title {
+    font-size: 1.55rem;
+  }
+
+  .sidebar-user-name,
+  .sidebar-user-role {
+    display: none;
+  }
+
+  .auth-form-panel {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .modal-content,
+  .card {
+    border-radius: var(--r-sm);
+  }
 }

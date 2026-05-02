@@ -153,6 +153,7 @@ export default function BookingHistory() {
               const isPast = new Date(b.event_date) < new Date();
               return (
                 <div
+                  className="booking-row"
                   key={b.id}
                   style={{
                     background:"var(--ink-3)", border:"1px solid var(--border)",
@@ -203,7 +204,7 @@ export default function BookingHistory() {
                   </span>
 
                   {/* Actions */}
-                  <div style={{ display:"flex", gap:".5rem", flexShrink:0 }}>
+                  <div className="booking-actions" style={{ display:"flex", gap:".5rem", flexShrink:0 }}>
                     <Link
                       to={`/events/${b.event_id}`}
                       className="btn btn-ghost btn-sm"

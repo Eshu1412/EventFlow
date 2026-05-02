@@ -105,9 +105,9 @@ export default function EventDetail() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2.5rem 2rem", display: "flex", gap: "2.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div className="event-detail-layout" style={{ maxWidth: 1200, margin: "0 auto", padding: "2.5rem 2rem", display: "flex", gap: "2.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
         {/* Left */}
-        <div style={{ flex: 1, minWidth: 300 }}>
+        <div className="event-detail-main" style={{ flex: 1, minWidth: 280 }}>
           {/* Organizer */}
           <div style={{ display: "flex", alignItems: "center", gap: ".75rem", marginBottom: "2rem" }}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--color-primary)",
@@ -235,7 +235,7 @@ export default function EventDetail() {
         </div>
 
         {/* Right – Booking Card */}
-        <div style={{ width: 340, flexShrink: 0 }}>
+        <div className="event-detail-sidebar" style={{ width: 340, flexShrink: 0, maxWidth: "100%" }}>
           <div className="booking-card-sticky">
             <h3 style={{ marginBottom: "1.25rem", fontSize: "1.15rem" }}>Book Tickets</h3>
 
