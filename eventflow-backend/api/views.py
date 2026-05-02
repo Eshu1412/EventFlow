@@ -310,6 +310,9 @@ def password_reset_request(request):
     Always returns 200 to prevent email enumeration.
     Sends a reset link to the email if an account exists.
     """
+    from django.conf import settings
+    from .email_backend import send_email_via_emailjs
+
     email = request.data.get('email', '').strip().lower()
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -327,75 +330,27 @@ def password_reset_request(request):
     token_obj = PasswordResetToken.objects.create(user=user)
     reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token_obj.token}"
 
-    # HTML email body
-    html_body = f"""
-    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;background:#0c0d0f;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden">
-      <div style="background:linear-gradient(135deg,#b8924e,#966a1e);padding:32px 40px">
-        <h1 style="margin:0;font-size:28px;letter-spacing:0.08em;color:#fff;font-weight:900">
-          Event<span style="color:#0c0d0f">Flow</span>
-        </h1>
-      </div>
-      <div style="padding:40px">
-        <h2 style="margin:0 0 12px;font-size:22px;color:#ffffff">Reset your password</h2>
-        <p style="color:rgba(255,255,255,0.55);font-size:14px;line-height:1.7;margin:0 0 28px">
-          Hi <strong style="color:#fff">{user.name or user.email}</strong>,<br/>
-          We received a request to reset the password for your EventFlow account.
-          Click the button below to choose a new password. This link expires in <strong style="color:#b8924e">1 hour</strong>.
-        </p>
-        <a href="{reset_url}"
-           style="display:inline-block;padding:14px 32px;background:#b8924e;color:#0c0d0f;
-                  font-weight:700;font-size:15px;border-radius:8px;text-decoration:none;
-                  letter-spacing:0.04em">
-          Reset Password
-        </a>
-        <p style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:32px;line-height:1.6">
-          If you didn't request a password reset, you can safely ignore this email.
-          Your password will not be changed.<br/><br/>
-          Or copy this link: <a href="{reset_url}" style="color:#b8924e">{reset_url}</a>
-        </p>
-      </div>
-      <div style="background:#141518;padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06)">
-        <p style="margin:0;color:rgba(255,255,255,0.2);font-size:11px">
-          &copy; 2025 EventFlow &mdash; Tushar Maurya &mdash; B.Tech IT Project
-        </p>
-      </div>
-    </div>
-    """
-
-    import requests as http_requests
-    from django.conf import settings as django_settings
-
-    api_key    = django_settings.EMAIL_HOST_PASSWORD
-    from_email = django_settings.DEFAULT_FROM_EMAIL
-
-    payload = {
-        "from":    from_email,
-        "to":      [email],
-        "subject": "Reset your EventFlow password",
-        "text":    f"Reset your password: {reset_url}\n\nThis link expires in 1 hour.",
-        "html":    html_body,
-    }
-    req_headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type":  "application/json",
-    }
-
     try:
-        resp = http_requests.post(
-            "https://api.resend.com/emails",
-            json=payload, headers=req_headers, timeout=10,
+        send_email_via_emailjs(
+            to_email=email,
+            subject="Reset your EventFlow password",
+            html_body="",
+            text_body=f"Reset your password: {reset_url}\n\nThis link expires in 1 hour.",
+            extra_params={
+                "title": "Reset your password",
+                "description": f"Hi {user.name or user.email}, we received a request to reset the password for your EventFlow account. Click the button below to choose a new password. This link expires in 1 hour.",
+                "link": reset_url,
+                "button_text": "Verify Now",
+            },
         )
-        resp.raise_for_status()
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning("Password reset email failed: %s", e)
-        if django_settings.DEBUG:
-            # Dev fallback: return the reset link directly so local testing works
+        if settings.DEBUG:
             return Response({
-                'message':   '⚠️ Dev mode: email not delivered (Resend sandbox). Use the link below.',
+                'message':   'Dev mode: email not delivered. Use the link below.',
                 'reset_url': reset_url,
             }, status=status.HTTP_200_OK)
-        # Production: token still valid — surface a clean error
         return Response(
             {'error': 'Failed to send reset email. Please try again later.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -449,6 +404,9 @@ def send_registration_otp(request):
     Body: { "email": "user@example.com" }
     Generates a 6-digit OTP and emails it. Rate-limited to 1 per 10 minutes per email.
     """
+    from django.conf import settings
+    from .email_backend import send_email_via_emailjs
+
     email = (request.data.get('email') or '').strip().lower()
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -459,69 +417,34 @@ def send_registration_otp(request):
     # Generate OTP
     otp_obj = EmailOTP.generate(email)
 
-    html_body = f"""
-    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:520px;margin:0 auto;background:#0c0d0f;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden">
-      <div style="background:linear-gradient(135deg,#b8924e,#966a1e);padding:28px 36px">
-        <h1 style="margin:0;font-size:26px;letter-spacing:0.08em;color:#fff;font-weight:900">Event<span style="color:#0c0d0f">Flow</span></h1>
-      </div>
-      <div style="padding:36px">
-        <h2 style="margin:0 0 10px;font-size:20px;color:#ffffff">Verify your email</h2>
-        <p style="color:rgba(255,255,255,0.55);font-size:14px;line-height:1.7;margin:0 0 28px">
-          Use the code below to verify your email address for EventFlow. It expires in <strong style="color:#b8924e">10 minutes</strong>.
-        </p>
-        <div style="background:rgba(255,255,255,0.05);border:1px dashed rgba(184,146,78,0.5);border-radius:12px;padding:20px;text-align:center;margin-bottom:24px">
-          <span style="font-size:42px;font-weight:900;letter-spacing:0.2em;color:#b8924e;font-family:monospace">{otp_obj.otp}</span>
-        </div>
-        <p style="color:rgba(255,255,255,0.3);font-size:12px;line-height:1.6">
-          If you didn't request this, you can safely ignore this email.
-        </p>
-      </div>
-      <div style="background:#141518;padding:18px 36px;border-top:1px solid rgba(255,255,255,0.06)">
-        <p style="margin:0;color:rgba(255,255,255,0.2);font-size:11px">&copy; 2025 EventFlow &mdash; Tushar Maurya</p>
-      </div>
-    </div>
-    """
-
-    import requests as http_requests
-    from django.conf import settings as django_settings
-
-    api_key = django_settings.EMAIL_HOST_PASSWORD
-    from_email = django_settings.DEFAULT_FROM_EMAIL
-
-    payload = {
-        "from": from_email,
-        "to": [email],
-        "subject": "Your EventFlow verification code",
-        "text": f"Your EventFlow OTP is: {otp_obj.otp}\n\nExpires in 10 minutes.",
-        "html": html_body,
-    }
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
+    # Build verify link — clicking it auto-fills OTP on the frontend
+    import urllib.parse
+    verify_url = f"{settings.FRONTEND_URL}/verify-email?email={urllib.parse.quote(email)}&otp={otp_obj.otp}"
 
     try:
-        resp = http_requests.post(
-            "https://api.resend.com/emails",
-            json=payload,
-            headers=headers,
-            timeout=10,
+        send_email_via_emailjs(
+            to_email=email,
+            subject="Verify your EventFlow account",
+            html_body="",
+            text_body=f"Your EventFlow OTP is: {otp_obj.otp}\n\nOr click: {verify_url}",
+            extra_params={
+                "title": "Verify your email",
+                "description": f"Click the button below to verify your email address for EventFlow. This link expires in 10 minutes.",
+                "link": verify_url,
+                "button_text": "Verify Now",
+            },
         )
-        resp.raise_for_status()
     except Exception as e:
         error_msg = str(e)
-        if django_settings.DEBUG:
-            # Dev-mode fallback: return OTP in response so local testing works
-            # even when Resend sandbox blocks delivery to non-verified addresses.
+        if settings.DEBUG:
             import logging
             logging.getLogger(__name__).warning(
-                "OTP email delivery failed (dev mode — returning OTP in response): %s", error_msg
+                "OTP email delivery failed (dev mode): %s", error_msg
             )
             return Response({
-                'message': '⚠️ Dev mode: email not delivered (Resend sandbox restriction). Use the OTP below.',
+                'message': 'Dev mode: email not delivered. Use the OTP below.',
                 'dev_otp': otp_obj.otp,
             }, status=status.HTTP_200_OK)
-        # Production: delete the OTP and surface the error
         otp_obj.delete()
         return Response(
             {'error': f'Failed to send email: {error_msg}'},

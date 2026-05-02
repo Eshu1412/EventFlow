@@ -274,11 +274,12 @@ def generate_ticket_pdf(booking) -> io.BytesIO:
 
 def send_ticket_email(booking) -> None:
     """
-    Send the PDF ticket as an email attachment to the booking user.
-    Raises on SMTP failure — caller should catch.
+    Send a booking confirmation email to the user via EmailJS.
+    Uses the universal template with a "View Ticket" button.
+    Raises on failure — caller should catch.
     """
-    from django.core.mail import EmailMessage
     from django.conf import settings
+    from .email_backend import send_email_via_emailjs
 
     user  = booking.user
     event = booking.event
@@ -287,99 +288,30 @@ def send_ticket_email(booking) -> None:
     if hasattr(event.date, "strftime"):
         event_date_str = event.date.strftime("%d %B %Y at %I:%M %p")
 
-    html_body = f"""
-    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:580px;margin:0 auto;
-                background:#0c0d0f;border:1px solid rgba(255,255,255,0.08);
-                border-radius:16px;overflow:hidden">
-      <div style="background:linear-gradient(135deg,#b8924e,#966a1e);padding:32px 40px">
-        <h1 style="margin:0;font-size:28px;letter-spacing:0.08em;color:#fff;font-weight:900">
-          Event<span style="color:#0c0d0f">Flow</span>
-        </h1>
-        <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px">
-          Your booking is confirmed!
-        </p>
-      </div>
+    frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:5173")
+    price_str = "FREE" if not event.price else f"Rs.{event.price * booking.quantity:,.2f}"
 
-      <div style="padding:40px">
-        <h2 style="margin:0 0 8px;font-size:22px;color:#ffffff">
-          🎟️ Your ticket is ready!
-        </h2>
-        <p style="color:rgba(255,255,255,0.55);font-size:14px;line-height:1.8;margin:0 0 28px">
-          Hi <strong style="color:#fff">{user.name or user.email}</strong>, your booking for
-          <strong style="color:#b8924e">{event.title}</strong> has been confirmed.<br/>
-          Your ticket is attached to this email as a PDF. Please bring it (printed or digital)
-          to the venue entrance.
-        </p>
-
-        <!-- Ticket summary card -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(184,146,78,0.25);
-                    border-radius:12px;padding:24px;margin-bottom:28px">
-          <table style="width:100%;border-collapse:collapse">
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em;width:40%">Event</td>
-              <td style="padding:6px 0;color:#fff;font-weight:600;font-size:14px">{event.title}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em">Date & Time</td>
-              <td style="padding:6px 0;color:#fff;font-size:14px">{event_date_str or 'TBA'}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em">Venue</td>
-              <td style="padding:6px 0;color:#fff;font-size:14px">{event.location or 'TBA'}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em">Booking ID</td>
-              <td style="padding:6px 0;color:#b8924e;font-weight:700;font-size:14px">
-                #{booking.id:06d}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em">Quantity</td>
-              <td style="padding:6px 0;color:#fff;font-weight:700;font-size:14px">
-                {booking.quantity}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;
-                         text-transform:uppercase;letter-spacing:0.08em">Price</td>
-              <td style="padding:6px 0;color:#b8924e;font-weight:700;font-size:14px">
-                {'FREE' if not event.price else f'₹{event.price * booking.quantity:,.2f}'}
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <p style="color:rgba(255,255,255,0.35);font-size:12px;line-height:1.7;margin:0">
-          This ticket is non-transferable and valid for one entry only.<br/>
-          For any queries, please contact the event organizer.
-        </p>
-      </div>
-
-      <div style="background:#141518;padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06)">
-        <p style="margin:0;color:rgba(255,255,255,0.2);font-size:11px">
-          &copy; 2025 EventFlow &mdash; Tushar Maurya &mdash; B.Tech IT Project
-        </p>
-      </div>
-    </div>
-    """
-
-    pdf_buf = generate_ticket_pdf(booking)
-
-    email = EmailMessage(
-        subject=f"🎟️ Your EventFlow Ticket — {event.title}",
-        body=html_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[user.email],
+    description = (
+        f"Hi {user.name or user.email}, your booking for {event.title} has been confirmed!\n\n"
+        f"Event: {event.title}\n"
+        f"Date: {event_date_str or 'TBA'}\n"
+        f"Venue: {event.location or 'TBA'}\n"
+        f"Booking ID: #{booking.id:06d}\n"
+        f"Quantity: {booking.quantity}\n"
+        f"Price: {price_str}\n\n"
+        f"You can download your PDF ticket from the EventFlow app."
     )
-    email.content_subtype = "html"
-    email.attach(
-        filename=f"EventFlow_Ticket_{booking.id:06d}.pdf",
-        content=pdf_buf.read(),
-        mimetype="application/pdf",
+
+    send_email_via_emailjs(
+        to_email=user.email,
+        subject=f"Your EventFlow Ticket - {event.title}",
+        html_body="",
+        text_body=description,
+        extra_params={
+            "title": "Your ticket is ready!",
+            "description": description,
+            "link": f"{frontend_url}/my-bookings",
+            "button_text": "View Ticket",
+        },
     )
-    email.send(fail_silently=False)
+

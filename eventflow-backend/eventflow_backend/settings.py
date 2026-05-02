@@ -28,9 +28,9 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-y1g15^mcu_#l7)qo#*fi+n6op30$w7db)h=59q7ra_%#7xvi88'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -170,12 +170,23 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# ── Email / SMTP ──────────────────────────────────────────────────────────────
-# Uses the custom Resend HTTP backend — avoids SMTP port 587 which is blocked
-# on Render's free tier. The API key authenticates via Authorization header.
-EMAIL_BACKEND       = "api.email_backend.ResendHTTPEmailBackend"
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")   # Resend API key
-DEFAULT_FROM_EMAIL  = os.environ.get("DEFAULT_FROM_EMAIL", "onboarding@resend.dev")
+# ── Email / EmailJS HTTP API ───────────────────────────────────────────────────
+# Uses the EmailJS REST API — avoids SMTP port blocking on Render's free tier.
+#
+# Env vars for Render:
+#   EMAILJS_SERVICE_ID   — your EmailJS service ID  (e.g. service_aud0bch)
+#   EMAILJS_PUBLIC_KEY   — EmailJS public key / user_id
+#   EMAILJS_PRIVATE_KEY  — EmailJS private key / accessToken (for server-side)
+#   EMAILJS_TEMPLATE_ID  — Template with: to_email, subject, message_html vars
+#   FRONTEND_URL         — your Vercel frontend URL
+# ───────────────────────────────────────────────────────────────────────────────
+EMAIL_BACKEND        = "api.email_backend.EmailJSBackend"
+EMAILJS_SERVICE_ID   = os.environ.get("EMAILJS_SERVICE_ID", "")
+EMAILJS_PUBLIC_KEY   = os.environ.get("EMAILJS_PUBLIC_KEY", "")
+EMAILJS_PRIVATE_KEY  = os.environ.get("EMAILJS_PRIVATE_KEY", "")
+EMAILJS_TEMPLATE_ID  = os.environ.get("EMAILJS_TEMPLATE_ID", "")
+DEFAULT_FROM_EMAIL   = os.environ.get("DEFAULT_FROM_EMAIL", "EventFlow <noreply@eventflow.com>")
 
 # Base URL of the React frontend (used in password-reset email links)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+
