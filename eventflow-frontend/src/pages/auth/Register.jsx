@@ -29,18 +29,14 @@ export default function Register() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
-    setDevOtp("");
     setLoading(true);
     try {
-      const { data } = await sendOtp({ email: form.email });
-      // Dev-mode fallback: backend couldn't deliver email, returns OTP directly
-      if (data?.dev_otp) {
-        setDevOtp(data.dev_otp);
-        setOtp(data.dev_otp);  // auto-fill so user doesn't have to type it
-      }
+      // Save registration data so VerifyEmail page can complete registration
+      sessionStorage.setItem("pendingRegistration", JSON.stringify(form));
+      await sendOtp({ email: form.email });
       setStep("otp");
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to send OTP.");
+      setError(err.response?.data?.error || "Failed to send verification email.");
     } finally {
       setLoading(false);
     }
@@ -224,50 +220,41 @@ export default function Register() {
               </p>
             </motion.form>
           ) : (
-            <motion.form variants={item} onSubmit={submit} className="form-stack">
-              {devOtp ? (
-                // Dev-mode notice: email couldn't be delivered, OTP returned in API response
-                <div style={{
-                  background: "rgba(184,146,78,0.1)",
-                  border: "1px solid rgba(184,146,78,0.4)",
-                  borderRadius: "var(--r-sm)",
-                  padding: "0.875rem 1rem",
-                  fontSize: "0.82rem",
-                  lineHeight: 1.6,
-                }}>
-                  <div style={{ fontWeight: 700, color: "var(--gold)", marginBottom: "0.3rem" }}>⚠️ Dev Mode — Email not delivered</div>
-                  <div style={{ color: "var(--fg-sub)" }}>
-                    Resend sandbox can only send to your own verified address.
-                    Your OTP has been auto-filled below. In production, configure a verified sender domain.
-                  </div>
-                  <div style={{ marginTop: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "1.1rem", color: "var(--gold)", letterSpacing: "0.15em" }}>
-                    OTP: {devOtp}
-                  </div>
-                </div>
-              ) : (
-                <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                  We've sent a 6-digit code to <strong>{form.email}</strong>
-                </p>
-              )}
-              <div className="form-group">
-                <label className="form-label">Verification Code</label>
-                <input
-                  name="otp" type="text" className="form-control"
-                  placeholder="Enter 6-digit OTP"
-                  value={otp} onChange={(e) => setOtp(e.target.value)} required
-                  maxLength={6}
-                />
+            <motion.div variants={item} className="form-stack" style={{ textAlign: "center" }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: "50%",
+                background: "rgba(184,146,78,0.12)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 1.5rem",
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
               </div>
-              <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-                {loading
-                  ? <><span className="loading-spinner" /> Verifying & Registering…</>
-                  : <><ArrowRight size={16} /> Verify & Create Account</>
-                }
-              </button>
-              <button type="button" onClick={() => setStep("details")} className="btn btn-ghost btn-full" style={{ marginTop: "0.5rem" }} disabled={loading}>
-                Back to details
-              </button>
-            </motion.form>
+
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--white)", marginBottom: "0.5rem" }}>
+                Check your email
+              </h3>
+
+              <p style={{ fontSize: "0.85rem", color: "var(--muted)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
+                We've sent a verification link to<br />
+                <strong style={{ color: "var(--white)" }}>{form.email}</strong>
+              </p>
+
+              <p style={{ fontSize: "0.8rem", color: "var(--muted)", lineHeight: 1.6 }}>
+                Click the <strong style={{ color: "var(--gold)" }}>Verify Now</strong> button in the email to verify your account, then come back to sign in.
+              </p>
+
+              <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <Link to="/login" className="btn btn-primary btn-full btn-lg">
+                  <ArrowRight size={16} /> Go to Sign In
+                </Link>
+                <button type="button" onClick={() => setStep("details")} className="btn btn-ghost btn-full" disabled={loading}>
+                  Back to details
+                </button>
+              </div>
+            </motion.div>
           )}
         </div>
       </motion.div>
