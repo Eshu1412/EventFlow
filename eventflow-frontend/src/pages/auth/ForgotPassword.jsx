@@ -7,16 +7,19 @@ import ThemeToggle from "../../components/ThemeToggle";
 import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
-  const [email,   setEmail]   = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent,    setSent]    = useState(false);
-  const [error,   setError]   = useState("");
+  const [email,        setEmail]        = useState("");
+  const [loading,      setLoading]      = useState(false);
+  const [sent,         setSent]         = useState(false);
+  const [error,        setError]        = useState("");
+  const [devResetUrl,  setDevResetUrl]  = useState(""); // dev-mode fallback
 
   const submit = async (e) => {
     e.preventDefault();
-    setError(""); setLoading(true);
+    setError(""); setLoading(true); setDevResetUrl("");
     try {
-      await axios.post("/api/auth/password-reset/", { email });
+      const { data } = await axios.post("/api/auth/password-reset/", { email });
+      // Dev-mode fallback: backend couldn't email, returns reset_url directly
+      if (data?.reset_url) setDevResetUrl(data.reset_url);
       setSent(true);
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong. Please try again.");
@@ -95,14 +98,39 @@ export default function ForgotPassword() {
                 <CheckCircle size={32} style={{ color: "#4ade80" }} />
               </div>
 
-              <h2 className="auth-form-title" style={{ textAlign: "center" }}>CHECK YOUR EMAIL</h2>
+              <h2 className="auth-form-title" style={{ textAlign: "center" }}>
+                {devResetUrl ? "⚠️ DEV MODE" : "CHECK YOUR EMAIL"}
+              </h2>
               <p style={{ color: "var(--muted)", fontSize: ".9rem", lineHeight: 1.7, margin: "1rem 0 2rem" }}>
-                We've sent a password reset link to<br />
-                <strong style={{ color: "var(--fg)" }}>{email}</strong>
-                <br /><br />
-                The link expires in <strong style={{ color: "var(--gold)" }}>1 hour</strong>.
-                Check your spam folder if you don't see it.
+                {devResetUrl ? (
+                  <>
+                    Email not delivered (Resend sandbox restriction).<br />
+                    Click the link below to reset your password directly:
+                  </>
+                ) : (
+                  <>
+                    We've sent a password reset link to<br />
+                    <strong style={{ color: "var(--fg)" }}>{email}</strong>
+                    <br /><br />
+                    The link expires in <strong style={{ color: "var(--gold)" }}>1 hour</strong>.
+                    Check your spam folder if you don't see it.
+                  </>
+                )}
               </p>
+
+              {devResetUrl && (
+                <a
+                  href={devResetUrl}
+                  style={{
+                    display: "block", padding: "0.875rem 1rem", marginBottom: "1rem",
+                    background: "rgba(184,146,78,0.1)", border: "1px solid rgba(184,146,78,0.4)",
+                    borderRadius: "var(--r-sm)", fontSize: "0.8rem", wordBreak: "break-all",
+                    color: "var(--gold)", textDecoration: "none", lineHeight: 1.5,
+                  }}
+                >
+                  🔗 {devResetUrl}
+                </a>
+              )}
 
               <button className="btn btn-outline btn-full" onClick={() => { setSent(false); setEmail(""); }}>
                 <Send size={14} /> Resend Email

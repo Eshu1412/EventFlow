@@ -310,9 +310,6 @@ def password_reset_request(request):
     Always returns 200 to prevent email enumeration.
     Sends a reset link to the email if an account exists.
     """
-    from django.core.mail import send_mail
-    from django.conf import settings
-
     email = request.data.get('email', '').strip().lower()
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -365,14 +362,44 @@ def password_reset_request(request):
     </div>
     """
 
-    send_mail(
-        subject="Reset your EventFlow password",
-        message=f"Reset your password: {reset_url}\n\nThis link expires in 1 hour.",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email],
-        html_message=html_body,
-        fail_silently=False,
-    )
+    import requests as http_requests
+    from django.conf import settings as django_settings
+
+    api_key    = django_settings.EMAIL_HOST_PASSWORD
+    from_email = django_settings.DEFAULT_FROM_EMAIL
+
+    payload = {
+        "from":    from_email,
+        "to":      [email],
+        "subject": "Reset your EventFlow password",
+        "text":    f"Reset your password: {reset_url}\n\nThis link expires in 1 hour.",
+        "html":    html_body,
+    }
+    req_headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type":  "application/json",
+    }
+
+    try:
+        resp = http_requests.post(
+            "https://api.resend.com/emails",
+            json=payload, headers=req_headers, timeout=10,
+        )
+        resp.raise_for_status()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning("Password reset email failed: %s", e)
+        if django_settings.DEBUG:
+            # Dev fallback: return the reset link directly so local testing works
+            return Response({
+                'message':   '⚠️ Dev mode: email not delivered (Resend sandbox). Use the link below.',
+                'reset_url': reset_url,
+            }, status=status.HTTP_200_OK)
+        # Production: token still valid — surface a clean error
+        return Response(
+            {'error': 'Failed to send reset email. Please try again later.'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     return Response({'message': 'If that email is registered, a reset link has been sent.'}, status=status.HTTP_200_OK)
 
