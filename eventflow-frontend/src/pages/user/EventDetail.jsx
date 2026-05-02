@@ -10,9 +10,9 @@ import { formatDate, formatTime, formatPrice } from "../../utils/helpers";
 import { downloadTicket } from "../../utils/ticketDownload";
 
 const MOCK_EVENT = {
-  id: "1", title: "Neon Beats Music Festival 2025", category: "Music",
-  date: "2025-07-12T18:00:00", venue: "Madison Square Garden, NYC",
-  price: 89, description: "Experience the ultimate music festival featuring world-class artists across 3 stages. Neon Beats 2025 brings together the best in electronic, indie, and pop music for an unforgettable night under the stars. Doors open at 4 PM, headliners from 8 PM. Food vendors, art installations, and VIP lounge available.",
+  id: "1", title: "Neon Beats Music Festival 2026", category: "Music",
+  date: "2026-07-12T18:00:00", venue: "Madison Square Garden, NYC",
+  price: 89, description: "Experience the ultimate music festival featuring world-class artists across 3 stages. Neon Beats 2026 brings together the best in electronic, indie, and pop music for an unforgettable night under the stars. Doors open at 4 PM, headliners from 8 PM. Food vendors, art installations, and VIP lounge available.",
   organizer: "LiveNation Events", available_tickets: 342, tags: ["Music", "Festival", "Live", "NYC"],
   image_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80",
 };

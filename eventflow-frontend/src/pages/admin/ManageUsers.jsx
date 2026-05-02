@@ -12,11 +12,11 @@ import { formatDate, roleColor } from "../../utils/helpers";
 const ROLE_TAG = { user: "tag-muted", organizer: "tag-gold", admin: "tag-coral" };
 
 const MOCK = [
-  { id: 1, name: "Alex Chen", email: "alex@ex.com", role: "user", joined: "2025-04-08" },
-  { id: 2, name: "Priya Shah", email: "priya@ex.com", role: "organizer", joined: "2025-04-07" },
-  { id: 3, name: "Marcus J.", email: "marcus@ex.com", role: "user", joined: "2025-04-06" },
-  { id: 4, name: "Sarah K.", email: "sarah@ex.com", role: "user", joined: "2025-03-20" },
-  { id: 5, name: "Admin User", email: "admin@ef.com", role: "admin", joined: "2025-01-01" },
+  { id: 1, name: "Alex Chen", email: "alex@ex.com", role: "user", joined: "2026-04-08" },
+  { id: 2, name: "Priya Shah", email: "priya@ex.com", role: "organizer", joined: "2026-04-07" },
+  { id: 3, name: "Marcus J.", email: "marcus@ex.com", role: "user", joined: "2026-04-06" },
+  { id: 4, name: "Sarah K.", email: "sarah@ex.com", role: "user", joined: "2026-03-20" },
+  { id: 5, name: "Admin User", email: "admin@ef.com", role: "admin", joined: "2026-01-01" },
 ];
 
 export default function ManageUsers() {

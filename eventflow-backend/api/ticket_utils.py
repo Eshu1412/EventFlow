@@ -258,7 +258,7 @@ def generate_ticket_pdf(booking) -> io.BytesIO:
     # ── Footer ────────────────────────────────────────────────────────────
     c.setFont("Helvetica", 8)
     c.setFillColor(MUTED)
-    c.drawCentredString(W / 2, 30, "© 2025 EventFlow — Tushar Maurya — B.Tech IT Project  |  "
+    c.drawCentredString(W / 2, 30, "© 2026 EventFlow — Tushar Maurya — B.Tech IT Project  |  "
                                     "This ticket is non-transferable.")
     c.drawCentredString(W / 2, 18, f"Generated: {datetime.now().strftime('%d %b %Y %H:%M:%S')}")
 

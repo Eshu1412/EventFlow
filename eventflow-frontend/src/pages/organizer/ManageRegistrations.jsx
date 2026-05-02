@@ -13,10 +13,10 @@ const STATUS_TAG  = { confirmed:"tag-green", pending:"tag-gold", cancelled:"tag-
 const STATUS_ICON = { confirmed:CheckCircle, pending:Clock, cancelled:XCircle };
 
 const MOCK = [
-  { id:1, user_name:"Alex Chen",  user_id:1, event_title:"DevConf 2025",       booked_at:"2025-04-08T10:00:00Z", status:"confirmed" },
-  { id:2, user_name:"Priya Shah", user_id:2, event_title:"UX Design Workshop", booked_at:"2025-04-09T14:30:00Z", status:"confirmed" },
-  { id:3, user_name:"Marcus J.",  user_id:3, event_title:"DevConf 2025",       booked_at:"2025-04-10T09:15:00Z", status:"pending"   },
-  { id:4, user_name:"Sarah K.",   user_id:4, event_title:"Open Source Summit", booked_at:"2025-04-06T11:00:00Z", status:"cancelled"  },
+  { id:1, user_name:"Alex Chen",  user_id:1, event_title:"DevConf 2026",       booked_at:"2026-04-08T10:00:00Z", status:"confirmed" },
+  { id:2, user_name:"Priya Shah", user_id:2, event_title:"UX Design Workshop", booked_at:"2026-04-09T14:30:00Z", status:"confirmed" },
+  { id:3, user_name:"Marcus J.",  user_id:3, event_title:"DevConf 2026",       booked_at:"2026-04-10T09:15:00Z", status:"pending"   },
+  { id:4, user_name:"Sarah K.",   user_id:4, event_title:"Open Source Summit", booked_at:"2026-04-06T11:00:00Z", status:"cancelled"  },
 ];
 
 export default function ManageRegistrations() {

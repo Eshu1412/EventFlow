@@ -13,8 +13,8 @@ const STATUS_TAG = { active:"tag-green", ended:"tag-muted", draft:"tag-gold" };
 const getStatus  = (date) => (new Date(date) > new Date() ? "active" : "ended");
 
 const MOCK = [
-  { id:1, title:"DevConf 2025",            organizer_id:1, date:"2025-09-10", location:"Chicago",  booked_seats:127, total_seats:200 },
-  { id:2, title:"Neon Beats Music Festival", organizer_id:2, date:"2025-07-12", location:"NYC",     booked_seats:980, total_seats:1500 },
+  { id:1, title:"DevConf 2026",            organizer_id:1, date:"2026-09-10", location:"Chicago",  booked_seats:127, total_seats:200 },
+  { id:2, title:"Neon Beats Music Festival", organizer_id:2, date:"2026-07-12", location:"NYC",     booked_seats:980, total_seats:1500 },
   { id:3, title:"Old Tech Summit",           organizer_id:1, date:"2024-11-05", location:"Online",  booked_seats:43,  total_seats:100 },
 ];
 

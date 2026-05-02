@@ -90,7 +90,7 @@ felix = User.objects.get(email="felix@eventflow.test")
 EVENTS = [
     # -- Dev Patel's Events (Tech/Business) -----------------------------------
     {
-        "title":       "TechConf Global Summit 2025",
+        "title":       "TechConf Global Summit 2026",
         "description": (
             "The premier developer conference of the year. Featuring keynotes from "
             "Google, Microsoft, and OpenAI engineers. 3 stages of talks covering AI, "
@@ -156,7 +156,7 @@ EVENTS = [
 
     # -- Eva Chen's Events (Music/Art) ----------------------------------------
     {
-        "title":       "Neon Beats Music Festival 2025",
+        "title":       "Neon Beats Music Festival 2026",
         "description": (
             "The ultimate outdoor music experience. Three stages, 18 artists, 12 hours "
             "of non-stop music spanning electronic, indie, hip-hop, and pop. Featuring "
@@ -188,7 +188,7 @@ EVENTS = [
         "organizer":   eva,
     },
     {
-        "title":       "Digital Art Expo 2025",
+        "title":       "Digital Art Expo 2026",
         "description": (
             "Step into the future of creativity. 30+ digital artists showcase immersive "
             "installations, generative art, and AI-assisted works. Live minting station "
@@ -255,7 +255,7 @@ EVENTS = [
         "organizer":   felix,
     },
     {
-        "title":       "City Cycling Challenge 2025",
+        "title":       "City Cycling Challenge 2026",
         "description": (
             "A 50 km social cycling event on traffic-free roads. Starting at India Gate "
             "at 6 AM, the route covers Lodhi Gardens, IIT Delhi, Qutub Minar, and back. "
@@ -322,9 +322,9 @@ def ev(title):
 # (user, event_title, status)
 BOOKINGS = [
     # -- Alice Johnson: tech + music + comedy fan ---------------------------
-    (alice, "TechConf Global Summit 2025",          "confirmed"),
+    (alice, "TechConf Global Summit 2026",          "confirmed"),
     (alice, "AI & Future of Work Summit",           "confirmed"),
-    (alice, "Neon Beats Music Festival 2025",       "confirmed"),
+    (alice, "Neon Beats Music Festival 2026",       "confirmed"),
     (alice, "Jazz Under The Stars",                 "confirmed"),
     (alice, "Stand-Up Comedy Night -- Open Mic",    "confirmed"),
     (alice, "World Street Food Festival",           "confirmed"),
@@ -332,35 +332,35 @@ BOOKINGS = [
 
     # -- Bob Sharma: sports + food + biz -----------------------------------
     (bob,   "Urban Half Marathon -- Mumbai Edition","confirmed"),
-    (bob,   "City Cycling Challenge 2025",          "confirmed"),
+    (bob,   "City Cycling Challenge 2026",          "confirmed"),
     (bob,   "World Street Food Festival",           "confirmed"),
     (bob,   "Yoga & Wellness Weekend Retreat",      "confirmed"),
     (bob,   "Startup Pitch Night -- Season 6",      "confirmed"),
-    (bob,   "TechConf Global Summit 2025",          "confirmed"),
-    (bob,   "Neon Beats Music Festival 2025",       "cancelled"),   # schedule conflict
+    (bob,   "TechConf Global Summit 2026",          "confirmed"),
+    (bob,   "Neon Beats Music Festival 2026",       "cancelled"),   # schedule conflict
 
     # -- Clara Mendes: art + wellness + music ------------------------------
-    (clara, "Digital Art Expo 2025",                "confirmed"),
+    (clara, "Digital Art Expo 2026",                "confirmed"),
     (clara, "Jazz Under The Stars",                 "confirmed"),
     (clara, "Yoga & Wellness Weekend Retreat",      "confirmed"),
     (clara, "Stand-Up Comedy Night -- Open Mic",    "confirmed"),
-    (clara, "Neon Beats Music Festival 2025",       "confirmed"),
+    (clara, "Neon Beats Music Festival 2026",       "confirmed"),
     (clara, "World Street Food Festival",           "confirmed"),
-    (clara, "City Cycling Challenge 2025",          "cancelled"),   # injury
+    (clara, "City Cycling Challenge 2026",          "cancelled"),   # injury
 
     # -- Grace Kim: admin attending diverse events -------------------------
-    (grace, "TechConf Global Summit 2025",          "confirmed"),
+    (grace, "TechConf Global Summit 2026",          "confirmed"),
     (grace, "AI & Future of Work Summit",           "confirmed"),
-    (grace, "Digital Art Expo 2025",                "confirmed"),
+    (grace, "Digital Art Expo 2026",                "confirmed"),
     (grace, "Stand-Up Comedy Night -- Open Mic",    "confirmed"),
 
     # -- Tushar Maurya: admin testing all categories -----------------------
-    (tushar, "TechConf Global Summit 2025",         "confirmed"),
-    (tushar, "Neon Beats Music Festival 2025",      "confirmed"),
+    (tushar, "TechConf Global Summit 2026",         "confirmed"),
+    (tushar, "Neon Beats Music Festival 2026",      "confirmed"),
     (tushar, "Urban Half Marathon -- Mumbai Edition","confirmed"),
     (tushar, "World Street Food Festival",          "confirmed"),
     (tushar, "Startup Pitch Night -- Season 6",     "confirmed"),
-    (tushar, "Digital Art Expo 2025",               "confirmed"),
+    (tushar, "Digital Art Expo 2026",               "confirmed"),
 ]
 
 print("\n[3/3] Seeding Bookings...")

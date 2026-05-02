@@ -97,7 +97,7 @@ export default function CreateEvent() {
                   <h3 style={{ marginBottom:".25rem" }}>Basic Information</h3>
                   <div className="form-group">
                     <label className="form-label">Event Title *</label>
-                    <input name="title" className="form-control" placeholder="e.g. Annual Tech Conference 2025"
+                    <input name="title" className="form-control" placeholder="e.g. Annual Tech Conference 2026"
                       value={form.title} onChange={handle} required />
                   </div>
                   <div className="form-group">

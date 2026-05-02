@@ -245,7 +245,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer className="footer">
         <div className="footer-brand">Event<em>Flow</em></div>
-        <p className="footer-copy">© 2025 EventFlow · CountryEdu Private Limited</p>
+        <p className="footer-copy">© 2026 EventFlow · CountryEdu Private Limited</p>
         <div className="footer-links">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>

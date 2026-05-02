@@ -11,10 +11,10 @@ import { formatDate } from "../../utils/helpers";
 import { downloadTicket } from "../../utils/ticketDownload";
 
 const MOCK = [
-  { id:"b1", event_id:1, event_title:"Neon Beats Festival", event_date:"2025-07-12", event_location:"MSG, NYC",       status:"confirmed" },
-  { id:"b2", event_id:2, event_title:"TechConf Summit",      event_date:"2025-08-03", event_location:"Moscone, SF",   status:"pending"   },
-  { id:"b3", event_id:3, event_title:"Urban Marathon",        event_date:"2025-06-22", event_location:"Central Park", status:"confirmed" },
-  { id:"b4", event_id:4, event_title:"Art Expo 2025",         event_date:"2025-09-05", event_location:"MoMA, NYC",    status:"cancelled" },
+  { id:"b1", event_id:1, event_title:"Neon Beats Festival", event_date:"2026-07-12", event_location:"MSG, NYC",       status:"confirmed" },
+  { id:"b2", event_id:2, event_title:"TechConf Summit",      event_date:"2026-08-03", event_location:"Moscone, SF",   status:"pending"   },
+  { id:"b3", event_id:3, event_title:"Urban Marathon",        event_date:"2026-06-22", event_location:"Central Park", status:"confirmed" },
+  { id:"b4", event_id:4, event_title:"Art Expo 2026",         event_date:"2026-09-05", event_location:"MoMA, NYC",    status:"cancelled" },
 ];
 
 const STATUS_TAG  = { confirmed:"tag-green", pending:"tag-gold", cancelled:"tag-coral" };

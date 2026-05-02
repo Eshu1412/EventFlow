@@ -10,10 +10,10 @@ import {
 import { formatDate, formatPrice } from "../../utils/helpers";
 
 const MOCK_EVENTS = [
-  { id:"e1", title:"DevConf 2025",        date:"2025-09-10", location:"Hyatt, Chicago", booked_seats:127, total_seats:200, status:"active" },
-  { id:"e2", title:"UX Design Workshop",  date:"2025-07-18", location:"WeWork, NYC",    booked_seats:45,  total_seats:60,  status:"active" },
-  { id:"e3", title:"Open Source Summit",  date:"2025-06-30", location:"Online",         booked_seats:322, total_seats:500, status:"ended"  },
-  { id:"e4", title:"Blockchain Bootcamp", date:"2025-10-22", location:"SF Hub",         booked_seats:0,   total_seats:80,  status:"draft"  },
+  { id:"e1", title:"DevConf 2026",        date:"2026-09-10", location:"Hyatt, Chicago", booked_seats:127, total_seats:200, status:"active" },
+  { id:"e2", title:"UX Design Workshop",  date:"2026-07-18", location:"WeWork, NYC",    booked_seats:45,  total_seats:60,  status:"active" },
+  { id:"e3", title:"Open Source Summit",  date:"2026-06-30", location:"Online",         booked_seats:322, total_seats:500, status:"ended"  },
+  { id:"e4", title:"Blockchain Bootcamp", date:"2026-10-22", location:"SF Hub",         booked_seats:0,   total_seats:80,  status:"draft"  },
 ];
 
 const STATUS_CLASS = { active:"tag-green", draft:"tag-gold", ended:"tag-muted" };
