@@ -422,9 +422,6 @@ def send_registration_otp(request):
     Body: { "email": "user@example.com" }
     Generates a 6-digit OTP and emails it. Rate-limited to 1 per 10 minutes per email.
     """
-    from django.core.mail import send_mail
-    from django.conf import settings
-
     email = (request.data.get('email') or '').strip().lower()
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -458,46 +455,51 @@ def send_registration_otp(request):
     </div>
     """
 
-    email_sent = False
-    email_error = None
-    try:
-        send_mail(
-            subject="Your EventFlow verification code",
-            message=f"Your EventFlow OTP is: {otp_obj.otp}\n\nExpires in 10 minutes.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            html_message=html_body,
-            fail_silently=False,
-        )
-        email_sent = True
-    except Exception as e:
-        email_error = str(e)
+    import requests as http_requests
+    from django.conf import settings as django_settings
 
-    if not email_sent:
-        if settings.DEBUG:
-            # ── Dev-mode fallback ──────────────────────────────────────────────
-            # Email delivery failed (e.g. Resend sandbox domain restriction).
-            # In development we return the OTP directly so registration can
-            # proceed without a verified email sender domain.
+    api_key = django_settings.EMAIL_HOST_PASSWORD
+    from_email = django_settings.DEFAULT_FROM_EMAIL
+
+    payload = {
+        "from": from_email,
+        "to": [email],
+        "subject": "Your EventFlow verification code",
+        "text": f"Your EventFlow OTP is: {otp_obj.otp}\n\nExpires in 10 minutes.",
+        "html": html_body,
+    }
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    try:
+        resp = http_requests.post(
+            "https://api.resend.com/emails",
+            json=payload,
+            headers=headers,
+            timeout=10,
+        )
+        resp.raise_for_status()
+    except Exception as e:
+        error_msg = str(e)
+        if django_settings.DEBUG:
+            # Dev-mode fallback: return OTP in response so local testing works
+            # even when Resend sandbox blocks delivery to non-verified addresses.
             import logging
             logging.getLogger(__name__).warning(
-                "OTP email delivery failed (dev mode — returning OTP in response): %s", email_error
+                "OTP email delivery failed (dev mode — returning OTP in response): %s", error_msg
             )
             return Response({
-                'message': (
-                    '⚠️ Dev mode: email could not be delivered '
-                    '(Resend sandbox only allows sending to your own verified address). '
-                    'Use the OTP below to continue.'
-                ),
+                'message': '⚠️ Dev mode: email not delivered (Resend sandbox restriction). Use the OTP below.',
                 'dev_otp': otp_obj.otp,
             }, status=status.HTTP_200_OK)
-        else:
-            # Production: email must succeed — delete the OTP and surface the error
-            otp_obj.delete()
-            return Response(
-                {'error': f'Failed to send email: {email_error}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        # Production: delete the OTP and surface the error
+        otp_obj.delete()
+        return Response(
+            {'error': f'Failed to send email: {error_msg}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     return Response({'message': 'OTP sent to your email. Valid for 10 minutes.'}, status=status.HTTP_200_OK)
 
