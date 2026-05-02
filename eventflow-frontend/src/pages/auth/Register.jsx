@@ -31,8 +31,8 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      // Save registration data so VerifyEmail page can complete registration
-      sessionStorage.setItem("pendingRegistration", JSON.stringify(form));
+      // Save registration data so VerifyEmail page can complete registration (localStorage persists across tabs)
+      localStorage.setItem("pendingRegistration", JSON.stringify(form));
       await sendOtp({ email: form.email });
       setStep("otp");
     } catch (err) {

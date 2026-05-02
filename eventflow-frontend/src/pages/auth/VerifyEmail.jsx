@@ -30,47 +30,57 @@ export default function VerifyEmail() {
         await verifyOtp({ email, otp });
 
         // Step 2: Check if we have pending registration data
-        const pending = sessionStorage.getItem("pendingRegistration");
+        const pending = localStorage.getItem("pendingRegistration");
         if (pending) {
           const form = JSON.parse(pending);
 
-          // Step 3: Complete registration
-          await registerUser({
-            name: form.name,
-            email: form.email,
-            password: form.password,
-            role: form.role,
-          });
+          // Only proceed if the email matches
+          if (form.email && form.email.toLowerCase() === email.toLowerCase()) {
+            // Step 3: Complete registration
+            await registerUser({
+              name: form.name,
+              email: form.email,
+              password: form.password,
+              role: form.role,
+            });
 
-          // Step 4: Auto-login
-          const { data } = await loginUser({
-            email: form.email,
-            password: form.password,
-          });
+            // Step 4: Auto-login
+            const { data } = await loginUser({
+              email: form.email,
+              password: form.password,
+            });
 
-          sessionStorage.removeItem("pendingRegistration");
-          login(data.user, data.token);
+            localStorage.removeItem("pendingRegistration");
+            login(data.user, data.token);
 
-          setStatus("success");
-          setMessage("Account created! Redirecting...");
+            setStatus("success");
+            setMessage("Account created successfully! Redirecting to your dashboard...");
 
-          // Redirect based on role
-          setTimeout(() => {
-            if (data.user.role === "admin") navigate("/admin");
-            else if (data.user.role === "organizer") navigate("/organizer");
-            else navigate("/dashboard");
-          }, 1500);
-        } else {
-          // No pending registration — just email verification
-          setStatus("success");
-          setMessage("Email verified! You can now sign in.");
+            // Redirect based on role
+            setTimeout(() => {
+              if (data.user.role === "admin") navigate("/admin");
+              else if (data.user.role === "organizer") navigate("/organizer");
+              else navigate("/dashboard");
+            }, 1500);
+            return;
+          }
         }
+
+        // No matching pending registration — just show verified message
+        setStatus("success");
+        setMessage("Email verified successfully! You can now sign in.");
       } catch (err) {
-        setStatus("error");
-        setMessage(
-          err.response?.data?.error ||
-            "Verification failed. The link may have expired."
-        );
+        const errorMsg = err.response?.data?.error || "";
+        
+        // If account already exists, that's actually fine — they can just log in
+        if (errorMsg.includes("already exists")) {
+          localStorage.removeItem("pendingRegistration");
+          setStatus("success");
+          setMessage("Your account is already set up! Please sign in.");
+        } else {
+          setStatus("error");
+          setMessage(errorMsg || "Verification failed. The link may have expired.");
+        }
       }
     };
 
@@ -139,7 +149,7 @@ export default function VerifyEmail() {
             </Link>
           )}
 
-          {status === "success" && !sessionStorage.getItem("pendingRegistration") && (
+          {status === "success" && (
             <Link to="/login" className="btn btn-primary btn-lg" style={{ marginTop: "1rem" }}>
               <ArrowRight size={16} /> Go to Sign In
             </Link>
