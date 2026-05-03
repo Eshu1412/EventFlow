@@ -73,11 +73,12 @@ import random
 
 class EmailOTP(models.Model):
     """6-digit OTP for email verification during registration. Expires in 10 minutes."""
-    email      = models.EmailField()
-    otp        = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-    verified   = models.BooleanField(default=False)
-    attempts   = models.IntegerField(default=0)
+    email        = models.EmailField()
+    otp          = models.CharField(max_length=6)
+    created_at   = models.DateTimeField(auto_now_add=True)
+    verified     = models.BooleanField(default=False)
+    attempts     = models.IntegerField(default=0)
+    pending_data = models.TextField(blank=True, null=True, help_text="JSON blob of {name, password, role} so verify-email works cross-device")
 
     class Meta:
         ordering = ['-created_at']

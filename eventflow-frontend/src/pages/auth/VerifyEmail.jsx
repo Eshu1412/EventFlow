@@ -1,7 +1,7 @@
 // src/pages/auth/VerifyEmail.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
-import { verifyOtp, registerUser, loginUser } from "../../api/auth";
+import { verifyOtp } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import ThemeToggle from "../../components/ThemeToggle";
 import { motion } from "framer-motion";
@@ -13,11 +13,16 @@ export default function VerifyEmail() {
   const { login } = useAuth();
   const [status, setStatus] = useState("verifying"); // verifying | success | error
   const [message, setMessage] = useState("Verifying your email...");
+  const hasRun = useRef(false); // prevent React 18 StrictMode double-fire
 
   const email = params.get("email") || "";
   const otp = params.get("otp") || "";
 
   useEffect(() => {
+    // Prevent double-execution in React 18 StrictMode
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     if (!email || !otp) {
       setStatus("error");
       setMessage("Invalid verification link. Please try registering again.");
@@ -26,66 +31,52 @@ export default function VerifyEmail() {
 
     const verify = async () => {
       try {
-        // Step 1: Verify the OTP
-        await verifyOtp({ email, otp });
+        // The backend now handles everything:
+        // 1. Verifies the OTP
+        // 2. Auto-registers the user using server-stored pending data
+        // 3. Returns a JWT token if registration succeeded
+        const { data } = await verifyOtp({ email, otp });
 
-        // Step 2: Check if we have pending registration data
-        const pending = localStorage.getItem("pendingRegistration");
-        if (pending) {
-          const form = JSON.parse(pending);
+        // Clean up localStorage fallback data
+        localStorage.removeItem("pendingRegistration");
 
-          // Only proceed if the email matches
-          if (form.email && form.email.toLowerCase() === email.toLowerCase()) {
-            // Step 3: Complete registration
-            await registerUser({
-              name: form.name,
-              email: form.email,
-              password: form.password,
-              role: form.role,
-            });
+        if (data.registered && data.token && data.user) {
+          // Auto-registration succeeded — log in and redirect
+          login(data.user, data.token);
 
-            // Step 4: Auto-login
-            const { data } = await loginUser({
-              email: form.email,
-              password: form.password,
-            });
+          setStatus("success");
+          setMessage("Account created successfully! Redirecting to your dashboard...");
 
-            localStorage.removeItem("pendingRegistration");
-            login(data.user, data.token);
-
-            setStatus("success");
-            setMessage("Account created successfully! Redirecting to your dashboard...");
-
-            // Redirect based on role
-            setTimeout(() => {
-              if (data.user.role === "admin") navigate("/admin");
-              else if (data.user.role === "organizer") navigate("/organizer");
-              else navigate("/dashboard");
-            }, 1500);
-            return;
-          }
+          setTimeout(() => {
+            if (data.user.role === "admin") navigate("/admin");
+            else if (data.user.role === "organizer") navigate("/organizer");
+            else navigate("/dashboard");
+          }, 1500);
+        } else if (data.already_exists) {
+          // Account already exists — just redirect to login
+          setStatus("success");
+          setMessage("Your account is already set up! Please sign in.");
+        } else {
+          // Verified but no auto-registration (legacy / edge case)
+          setStatus("success");
+          setMessage("Email verified successfully! You can now sign in.");
         }
-
-        // No matching pending registration — just show verified message
-        setStatus("success");
-        setMessage("Email verified successfully! You can now sign in.");
       } catch (err) {
         const errorMsg = err.response?.data?.error || "";
-        
-        // If account already exists, that's actually fine — they can just log in
+
         if (errorMsg.includes("already exists")) {
           localStorage.removeItem("pendingRegistration");
           setStatus("success");
           setMessage("Your account is already set up! Please sign in.");
         } else {
           setStatus("error");
-          setMessage(errorMsg || "Verification failed. The link may have expired.");
+          setMessage(errorMsg || "Verification failed. The link may have expired or been used.");
         }
       }
     };
 
     verify();
-  }, [email, otp, navigate, login]);
+  }, []); // empty deps — runs once, hasRun.current prevents StrictMode double-fire
 
   const icon = {
     verifying: (

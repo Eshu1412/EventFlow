@@ -1,5 +1,6 @@
 import requests
 import logging
+import time
 from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
 
@@ -101,11 +102,13 @@ class EmailJSBackend(BaseEmailBackend):
         return num_sent
 
 
-def send_email_via_emailjs(to_email, subject, html_body, text_body="", extra_params=None):
+def send_email_via_emailjs(to_email, subject, html_body, text_body="", extra_params=None, max_retries=2):
     """
     Standalone helper to send an email via EmailJS REST API.
     Used by views that construct their own HTML (OTP, password reset).
-    extra_params: dict of additional template variables (e.g. passcode, time).
+    extra_params: dict of additional template variables (e.g. title, description, link, button_text).
+
+    Retries up to max_retries times on transient failures (timeouts, 5xx).
     Returns True on success, raises on failure.
     """
     service_id = getattr(settings, "EMAILJS_SERVICE_ID", "")
@@ -113,18 +116,29 @@ def send_email_via_emailjs(to_email, subject, html_body, text_body="", extra_par
     private_key = getattr(settings, "EMAILJS_PRIVATE_KEY", "")
     template_id = getattr(settings, "EMAILJS_TEMPLATE_ID", "")
 
+    # Pre-flight check: fail fast if not configured
+    if not all([service_id, public_key, template_id]):
+        msg = (
+            f"EmailJS is not configured. "
+            f"SERVICE_ID={'set' if service_id else 'MISSING'}, "
+            f"PUBLIC_KEY={'set' if public_key else 'MISSING'}, "
+            f"TEMPLATE_ID={'set' if template_id else 'MISSING'}"
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+
     template_params = {
         "to_email": to_email,
         "email": to_email,
         "email_to": to_email,
         "reply_to": to_email,
         "subject": subject,
-        "message_html": html_body,
+        "message_html": html_body or text_body,
         "message": text_body or html_body,
         "from_name": "EventFlow",
     }
 
-    # Merge any extra template variables (passcode, time, etc.)
+    # Merge any extra template variables (title, description, link, button_text, etc.)
     if extra_params:
         template_params.update(extra_params)
 
@@ -138,15 +152,55 @@ def send_email_via_emailjs(to_email, subject, html_body, text_body="", extra_par
     if private_key:
         payload["accessToken"] = private_key
 
-    response = requests.post(
-        "https://api.emailjs.com/api/v1.0/email/send",
-        json=payload,
-        timeout=15,
-    )
+    last_error = None
 
-    if response.status_code == 200:
-        logger.info("EmailJS: sent to %s (subject: %s)", to_email, subject)
-        return True
-    else:
-        logger.error("EmailJS error %s to=%s: %s", response.status_code, to_email, response.text)
-        raise Exception(f"EmailJS API error {response.status_code}: {response.text}")
+    for attempt in range(1, max_retries + 1):
+        try:
+            logger.info(
+                "EmailJS attempt %d/%d: sending to %s (subject: %s)",
+                attempt, max_retries, to_email, subject
+            )
+
+            response = requests.post(
+                "https://api.emailjs.com/api/v1.0/email/send",
+                json=payload,
+                timeout=20,  # slightly longer timeout for reliability
+            )
+
+            if response.status_code == 200:
+                logger.info("EmailJS: sent to %s (subject: %s) on attempt %d", to_email, subject, attempt)
+                return True
+
+            # Log the full error for debugging
+            logger.error(
+                "EmailJS error %s to=%s (attempt %d/%d): %s",
+                response.status_code, to_email, attempt, max_retries, response.text
+            )
+
+            # Don't retry on 4xx client errors (bad request, auth error, etc.)
+            if 400 <= response.status_code < 500:
+                raise Exception(
+                    f"EmailJS API error {response.status_code}: {response.text}"
+                )
+
+            # 5xx server errors — retry
+            last_error = Exception(
+                f"EmailJS API error {response.status_code}: {response.text}"
+            )
+
+        except requests.exceptions.Timeout as e:
+            logger.warning("EmailJS timeout (attempt %d/%d) to=%s: %s", attempt, max_retries, to_email, e)
+            last_error = e
+        except requests.exceptions.ConnectionError as e:
+            logger.warning("EmailJS connection error (attempt %d/%d) to=%s: %s", attempt, max_retries, to_email, e)
+            last_error = e
+        except Exception as e:
+            # Non-retryable error — raise immediately
+            raise
+
+        # Wait before retry (exponential backoff: 1s, 2s)
+        if attempt < max_retries:
+            time.sleep(attempt)
+
+    # All retries exhausted
+    raise last_error or Exception("EmailJS: all retries exhausted")

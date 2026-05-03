@@ -23,6 +23,7 @@ __pycache__/
 env/
 venv/
 ENV/
+.python-version
 
 # Database
 db.sqlite3
@@ -35,6 +36,13 @@ local_settings.py
 static/
 media/
 staticfiles/
+
+# Dev / seed scripts (not needed in production)
+seed_data.py
+create_test_users.py
+create_specific_data.py
+fix_images.py
+verify_local.py
 
 # ==============================
 # FRONTEND (Node & Vite)
@@ -59,8 +67,24 @@ pnpm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+.cursor/
+.agents/
+.windsurf/
+.windsurfrules
+.mcp.json
+AGENT.md
+CLAUDE.md
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ==============================
+# GENERATED / TOOL OUTPUT
+# ==============================
+graphify-out/
+frontend-code.md
+.jetro/
+.github/
+.gemini/

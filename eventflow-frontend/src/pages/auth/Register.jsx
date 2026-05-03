@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { registerUser, loginUser, sendOtp, verifyOtp } from "../../api/auth";
-import { Eye, EyeOff, ArrowRight, AlertCircle, Users, Calendar, Shield } from "lucide-react";
+import { sendOtp } from "../../api/auth";
+import { Eye, EyeOff, ArrowRight, AlertCircle, Users, Calendar, Shield, RefreshCw } from "lucide-react";
 import ThemeToggle from "../../components/ThemeToggle";
 import { motion } from "framer-motion";
 
@@ -15,12 +15,11 @@ const ROLE_OPTIONS = [
 
 export default function Register() {
   const [form, setForm]     = useState({ name: "", email: "", password: "", role: "user" });
-  const [otp, setOtp]       = useState("");
   const [step, setStep]     = useState("details");
   const [showPw, setShowPw] = useState(false);
   const [error, setError]   = useState("");
   const [loading, setLoading] = useState(false);
-  const [devOtp, setDevOtp] = useState("");  // dev-mode fallback OTP
+  const [resending, setResending] = useState(false);
   const navigate  = useNavigate();
   const { login } = useAuth();
 
@@ -31,40 +30,40 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      // Save registration data so VerifyEmail page can complete registration (localStorage persists across tabs)
+      // Send ALL registration data to backend so it's stored server-side
+      // This ensures verification works even if opened on a different device
+      await sendOtp({
+        email: form.email,
+        name: form.name,
+        password: form.password,
+        role: form.role,
+      });
+      // Also save to localStorage as fallback (for same-browser verification)
       localStorage.setItem("pendingRegistration", JSON.stringify(form));
-      await sendOtp({ email: form.email });
       setStep("otp");
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to send verification email.");
+      const errMsg = err.response?.data?.error || "Failed to send verification email.";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const submit = async (e) => {
-    e.preventDefault();
+  const handleResend = async () => {
     setError("");
-    setLoading(true);
+    setResending(true);
     try {
-      await verifyOtp({ email: form.email, otp });
-      await registerUser({
-        name: form.name,
+      await sendOtp({
         email: form.email,
+        name: form.name,
         password: form.password,
-        role: form.role
+        role: form.role,
       });
-      const { data } = await loginUser({ email: form.email, password: form.password });
-      login(data.user, data.token);
-      
-      if (data.user.role === "admin") navigate("/admin");
-      else if (data.user.role === "organizer") navigate("/organizer");
-      else navigate("/dashboard");
+      setError(""); // clear any previous error
     } catch (err) {
-      console.error("Registration error:", err);
-      setError(err.response?.data?.error || "Registration failed. Please try again.");
+      setError(err.response?.data?.error || "Failed to resend. Please try again.");
     } finally {
-      setLoading(false);
+      setResending(false);
     }
   };
 
@@ -208,7 +207,7 @@ export default function Register() {
 
               <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
                 {loading
-                  ? <><span className="loading-spinner" /> Sending OTP…</>
+                  ? <><span className="loading-spinner" /> Sending verification…</>
                   : <><ArrowRight size={16} /> Continue</>
                 }
               </button>
@@ -243,7 +242,23 @@ export default function Register() {
               </p>
 
               <p style={{ fontSize: "0.8rem", color: "var(--muted)", lineHeight: 1.6 }}>
-                Click the <strong style={{ color: "var(--gold)" }}>Verify Now</strong> button in the email to verify your account, then come back to sign in.
+                Click the <strong style={{ color: "var(--gold)" }}>Verify Now</strong> button in the email to verify your account and complete registration automatically.
+              </p>
+
+              <p style={{ fontSize: "0.75rem", color: "var(--muted)", lineHeight: 1.6, marginTop: "0.75rem" }}>
+                Don't see the email? Check your spam folder, or{" "}
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending}
+                  style={{
+                    color: "var(--gold)", background: "none", border: "none",
+                    cursor: "pointer", textDecoration: "underline", fontSize: "inherit",
+                    padding: 0,
+                  }}
+                >
+                  {resending ? "resending…" : "resend it"}
+                </button>.
               </p>
 
               <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>

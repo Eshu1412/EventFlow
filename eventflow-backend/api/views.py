@@ -8,6 +8,9 @@ from .serializers import UserSerializer, EventSerializer, BookingSerializer, Rev
 from .permissions import IsOrganizerOrAdmin, IsAdmin
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Auth Routes
 @api_view(['POST'])
@@ -186,8 +189,7 @@ def book_event(request):
         from .ticket_utils import send_ticket_email
         send_ticket_email(booking)
     except Exception as exc:
-        import logging
-        logging.getLogger(__name__).warning("Ticket email failed: %s", exc)
+        logger.warning("Ticket email failed: %s", exc)
 
     return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
 
@@ -344,8 +346,7 @@ def password_reset_request(request):
             },
         )
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning("Password reset email failed: %s", e)
+        logger.warning("Password reset email failed: %s", e)
         if settings.DEBUG:
             return Response({
                 'message':   'Dev mode: email not delivered. Use the link below.',
@@ -401,11 +402,14 @@ def password_reset_confirm(request):
 def send_registration_otp(request):
     """
     POST /api/auth/send-otp/
-    Body: { "email": "user@example.com" }
-    Generates a 6-digit OTP and emails it. Rate-limited to 1 per 10 minutes per email.
+    Body: { "email": "user@example.com", "name": "...", "password": "...", "role": "user" }
+    Generates a 6-digit OTP, stores pending registration data server-side,
+    and emails a verification link. This way verification works even if the
+    user opens the link on a different device / browser.
     """
     from django.conf import settings
     from .email_backend import send_email_via_emailjs
+    import json
 
     email = (request.data.get('email') or '').strip().lower()
     if not email:
@@ -414,10 +418,21 @@ def send_registration_otp(request):
     if User.objects.filter(email__iexact=email).exists():
         return Response({'error': 'An account with this email already exists.'}, status=status.HTTP_409_CONFLICT)
 
-    # Generate OTP
+    # Collect registration data to store server-side
+    pending_data = {
+        'name': (request.data.get('name') or '').strip(),
+        'password': request.data.get('password', ''),
+        'role': request.data.get('role', 'user'),
+    }
+
+    # Generate OTP (deletes old OTPs for this email)
     otp_obj = EmailOTP.generate(email)
 
-    # Build verify link — clicking it auto-fills OTP on the frontend
+    # Store pending registration data in the OTP record
+    otp_obj.pending_data = json.dumps(pending_data)
+    otp_obj.save(update_fields=['pending_data'])
+
+    # Build verify link — clicking it auto-verifies and registers
     import urllib.parse
     verify_url = f"{settings.FRONTEND_URL}/verify-email?email={urllib.parse.quote(email)}&otp={otp_obj.otp}"
 
@@ -434,24 +449,22 @@ def send_registration_otp(request):
                 "button_text": "Verify Now",
             },
         )
+        logger.info("Verification email sent successfully to %s", email)
     except Exception as e:
         error_msg = str(e)
+        logger.error("OTP email delivery failed for %s: %s", email, error_msg)
         if settings.DEBUG:
-            import logging
-            logging.getLogger(__name__).warning(
-                "OTP email delivery failed (dev mode): %s", error_msg
-            )
             return Response({
                 'message': 'Dev mode: email not delivered. Use the OTP below.',
                 'dev_otp': otp_obj.otp,
             }, status=status.HTTP_200_OK)
-        otp_obj.delete()
+        # Don't delete the OTP — user can still try manual entry or resend
         return Response(
-            {'error': f'Failed to send email: {error_msg}'},
+            {'error': f'Failed to send verification email. Please try again.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    return Response({'message': 'OTP sent to your email. Valid for 10 minutes.'}, status=status.HTTP_200_OK)
+    return Response({'message': 'Verification email sent. Check your inbox (and spam folder).'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -460,31 +473,140 @@ def verify_registration_otp(request):
     """
     POST /api/auth/verify-otp/
     Body: { "email": "user@example.com", "otp": "123456" }
-    Validates OTP and marks it as verified so registration can proceed.
+
+    Validates OTP, marks it as verified, and auto-completes registration
+    using the pending data stored server-side (so it works even if the
+    user opens the verification link on a different device / browser).
+
+    Returns:
+      - On success with auto-registration: { "message": "...", "registered": true, "user": {...}, "token": "..." }
+      - On success without pending data: { "message": "...", "registered": false }
+      - On error: { "error": "..." }
     """
+    import json
+
     email = (request.data.get('email') or '').strip().lower()
     code  = (request.data.get('otp')   or '').strip()
 
     if not email or not code:
         return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Check if user already exists (could happen on retry / double-click)
+    if User.objects.filter(email__iexact=email).exists():
+        # Clean up any leftover OTP records
+        EmailOTP.objects.filter(email=email).delete()
+        # Auto-login the existing user if possible
+        return Response({
+            'message': 'Account already exists. Please sign in.',
+            'registered': False,
+            'already_exists': True,
+        }, status=status.HTTP_200_OK)
+
     otp_obj = EmailOTP.objects.filter(email=email).order_by('-created_at').first()
 
     if not otp_obj:
-        return Response({'error': 'No OTP found. Please request a new one.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No verification code found. Please request a new one.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # If already verified, check if we should still try to register
+    if otp_obj.verified:
+        # Try to complete registration with the stored pending data
+        pending_data = None
+        if otp_obj.pending_data:
+            try:
+                pending_data = json.loads(otp_obj.pending_data)
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        if pending_data and not User.objects.filter(email__iexact=email).exists():
+            # Registration didn't complete last time — complete it now
+            try:
+                user = User.objects.create(
+                    username=email,
+                    name=pending_data.get('name', ''),
+                    email=email,
+                    password=make_password(pending_data.get('password', '')),
+                    role=pending_data.get('role', 'user'),
+                )
+                otp_obj.delete()
+
+                refresh = RefreshToken.for_user(user)
+                refresh['role'] = user.role
+                return Response({
+                    'message': 'Account created successfully!',
+                    'registered': True,
+                    'user': UserSerializer(user).data,
+                    'token': str(refresh.access_token),
+                }, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                logger.error("Auto-registration failed for %s: %s", email, e)
+                return Response({'error': 'Registration failed. Please try again.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            otp_obj.delete()
+            return Response({
+                'message': 'Email already verified. You can now sign in.',
+                'registered': False,
+            }, status=status.HTTP_200_OK)
 
     # Track brute-force attempts
     otp_obj.attempts += 1
     otp_obj.save(update_fields=['attempts'])
 
     if not otp_obj.is_valid():
-        return Response({'error': 'OTP has expired or too many attempts. Please request a new one.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Verification code has expired or too many attempts. Please request a new one.'}, status=status.HTTP_400_BAD_REQUEST)
 
     if otp_obj.otp != code:
         remaining = max(0, 5 - otp_obj.attempts)
-        return Response({'error': f'Incorrect OTP. {remaining} attempt(s) remaining.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': f'Incorrect verification code. {remaining} attempt(s) remaining.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    # OTP is correct — mark as verified
     otp_obj.verified = True
     otp_obj.save(update_fields=['verified'])
 
-    return Response({'message': 'Email verified successfully. You may now complete registration.'}, status=status.HTTP_200_OK)
+    # Auto-complete registration if we have pending data stored server-side
+    pending_data = None
+    if otp_obj.pending_data:
+        try:
+            pending_data = json.loads(otp_obj.pending_data)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    if pending_data:
+        try:
+            password = pending_data.get('password', '')
+            if not password:
+                return Response({
+                    'message': 'Email verified but missing registration data. Please register again.',
+                    'registered': False,
+                }, status=status.HTTP_200_OK)
+
+            user = User.objects.create(
+                username=email,
+                name=pending_data.get('name', ''),
+                email=email,
+                password=make_password(password),
+                role=pending_data.get('role', 'user'),
+            )
+            otp_obj.delete()  # consume the verified record
+
+            # Auto-login: generate JWT
+            refresh = RefreshToken.for_user(user)
+            refresh['role'] = user.role
+
+            return Response({
+                'message': 'Account created successfully!',
+                'registered': True,
+                'user': UserSerializer(user).data,
+                'token': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error("Auto-registration after OTP verify failed for %s: %s", email, e)
+            # Don't delete the OTP — leave it verified so frontend can retry
+            return Response({
+                'error': 'Registration failed. Please try again.',
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        # No pending data (legacy flow) — just mark as verified
+        return Response({
+            'message': 'Email verified successfully. You may now complete registration.',
+            'registered': False,
+        }, status=status.HTTP_200_OK)
