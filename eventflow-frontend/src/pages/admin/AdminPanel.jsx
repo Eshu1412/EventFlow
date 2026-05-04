@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut,
-  Ticket, ArrowUpRight, RefreshCw, User, BookOpen
-} from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut, Ticket, ArrowUpRight, RefreshCw, User, BookOpen } from "lucide-react";
 import { formatDate } from "../../utils/helpers";
 
 const ROLE_TAG   = { user:"tag-muted", organizer:"tag-gold", admin:"tag-coral" };
@@ -37,7 +34,7 @@ export default function AdminPanel() {
     });
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); , []);
 
   const deleteUser = async (id) => {
     if (!window.confirm("Permanently delete this user?")) return;

@@ -3,11 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Users, Calendar, BarChart, Ticket,
-  Settings, LogOut, Download, TrendingUp, PieChart,
-  Activity, Award, Star, DollarSign
-} from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Ticket, Settings, LogOut, Download, TrendingUp, PieChart, Activity, Award, Star, DollarSign, User, BookOpen } from "lucide-react";
 import { formatDate, formatPrice } from "../../utils/helpers";
 
 /* ── Interactive Pie Chart ──────────────────────────────────── */
@@ -218,7 +214,7 @@ export default function AdminReports() {
       setBookings(b.data || []);
       setLoading(false);
     });
-  }, []);
+  , []);
 
   // ── derived analytics ──────────────────────────────────
   const totalUsers    = stats?.total_users    || users.length;

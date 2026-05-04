@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Plus, Users, BarChart2,
-  Settings, LogOut, Activity, DollarSign, Ticket, Calendar, Award
-} from "lucide-react";
+import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut, Activity, DollarSign, Ticket, Calendar, Award, User, BookOpen } from "lucide-react";
 import { formatPrice } from "../../utils/helpers";
 
 /* ── Interactive Pie Chart ──────────────────────────────────── */
@@ -171,7 +168,7 @@ export default function OrganizerAnalytics() {
       setBookings(b.data || []);
       setLoading(false);
     });
-  }, [user?.id]);
+  , [user?.id]);
 
   const navLinks = [
     { to:"/organizer",               icon:LayoutDashboard, label:"Dashboard"     },

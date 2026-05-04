@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Users, Calendar, BarChart, Ticket,
-  Settings, LogOut, Search, Download, Shield, Trash2,
-} from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Ticket, Settings, LogOut, Search, Download, Shield, Trash2, User, BookOpen } from "lucide-react";
 import { formatDate, roleColor } from "../../utils/helpers";
 
 const ROLE_TAG = { user: "tag-muted", organizer: "tag-gold", admin: "tag-coral" };
@@ -32,7 +29,7 @@ export default function ManageUsers() {
     axios.get("/api/admin/users/")
       .then(r => { setUsers(r.data); setLoading(false); })
       .catch(() => { setUsers(MOCK); setLoading(false); });
-  }, []);
+  , []);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Permanently delete this user?")) return;

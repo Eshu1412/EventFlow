@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Plus, Users, BarChart2,
-  Settings, LogOut, Download, Search, CheckCircle, XCircle, Clock,
-} from "lucide-react";
+import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut, Download, Search, CheckCircle, XCircle, Clock, User, BookOpen, Ticket, Calendar } from "lucide-react";
 import { formatDate } from "../../utils/helpers";
 
 const STATUS_TAG  = { confirmed:"tag-green", pending:"tag-gold", cancelled:"tag-coral" };
@@ -37,7 +34,7 @@ export default function ManageRegistrations() {
         setLoading(false);
       })
       .catch(() => { setRegs(MOCK); setLoading(false); });
-  }, [user?.id]);
+  , [user?.id]);
 
   const filtered = regs.filter(r => {
     const matchSearch =

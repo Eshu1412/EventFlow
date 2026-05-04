@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import {
-  LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut,
-  Ticket, User, BookOpen, Save, Shield
-} from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut, Ticket, User, BookOpen, Save, Shield } from "lucide-react";
 
 export default function AdminSettings() {
   const { user, logout } = useAuth();
@@ -39,7 +36,7 @@ export default function AdminSettings() {
       setLoading(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+    , 1000);
   };
 
   const nav = [

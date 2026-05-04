@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getProfile, updateProfile } from "../../api/auth";
-import {
-  LayoutDashboard, Plus, Users, BarChart2,
-  Settings, LogOut, Mail, Shield, Edit2, Check, X, AlertCircle, CheckCircle
-} from "lucide-react";
+import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut, Mail, Shield, Edit2, Check, X, AlertCircle, CheckCircle, User, BookOpen, Ticket, Calendar } from "lucide-react";
 
 export default function OrganizerSettings() {
   const { user, login, logout } = useAuth();
@@ -44,7 +41,7 @@ export default function OrganizerSettings() {
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  , []);
 
   const handleUpdate = async (e) => {
     e.preventDefault();

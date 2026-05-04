@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Users, Calendar, BarChart, Ticket,
-  Settings, LogOut, Search, Download, Eye, Trash2,
-} from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Ticket, Settings, LogOut, Search, Download, Eye, Trash2, User, BookOpen } from "lucide-react";
 import { formatDate, statusColor } from "../../utils/helpers";
 
 const STATUS_TAG = { active:"tag-green", ended:"tag-muted", draft:"tag-gold" };
@@ -31,7 +28,7 @@ export default function ManageEvents() {
     axios.get("/api/admin/events/")
       .then(r => { setEvents(r.data); setLoading(false); })
       .catch(() => { setEvents(MOCK); setLoading(false); });
-  }, []);
+  , []);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Permanently delete this event?")) return;

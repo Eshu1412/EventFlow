@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createEvent } from "../../api/events";
-import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut,
-         Upload, Check, ArrowRight, ArrowLeft, Eye, User, Calendar, Ticket, BookOpen } from "lucide-react";
+import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut, Upload, Check, ArrowRight, ArrowLeft, Eye, User, Calendar, Ticket, BookOpen } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const CATEGORIES = ["Music","Tech","Sports","Food","Art","Business","Conference","Workshop","Other"];
@@ -30,7 +29,7 @@ export default function CreateEvent() {
         title:       form.title,
         description: form.description,
         category:    form.category,
-        location:    form.venue ? `${form.venue}, ${form.city}` : form.city,
+        location:    form.venue ? `${form.venue, ${form.city}` : form.city,
         date:        `${form.date}T${form.time || "18:00"}:00`,
         price:       Number(form.price) || 0,
         total_seats: Number(form.total_tickets) || 100,
@@ -194,7 +193,7 @@ export default function CreateEvent() {
                     { label:"Title", value:form.title || "—" },
                     { label:"Category", value:form.category || "—" },
                     { label:"Date", value:form.date ? `${form.date} at ${form.time}` : "—" },
-                    { label:"Venue", value:form.venue ? `${form.venue}, ${form.city}` : "—" },
+                    { label:"Venue", value:form.venue ? `${form.venue, ${form.city}` : "—" },
                     { label:"Price", value:form.price ? `$${form.price}` : "Free" },
                     { label:"Tickets", value:form.total_tickets || "100" },
                   ].map(({ label, value }) => (

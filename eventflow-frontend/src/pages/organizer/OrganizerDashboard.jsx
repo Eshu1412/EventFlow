@@ -3,11 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import {
-  LayoutDashboard, Calendar, Plus, Users, BarChart2,
-  Settings, LogOut, Edit, Trash2, Eye, ArrowUpRight,
-  Ticket, User, BookOpen
-} from "lucide-react";
+import { LayoutDashboard, Calendar, Plus, Users, BarChart2, Settings, LogOut, Edit, Trash2, Eye, ArrowUpRight, Ticket, User, BookOpen } from "lucide-react";
 import { formatDate, formatPrice } from "../../utils/helpers";
 
 const MOCK_EVENTS = [
@@ -45,7 +41,7 @@ export default function OrganizerDashboard() {
         setLoading(false);
       })
       .catch(() => { setEvents(MOCK_EVENTS); setLoading(false); });
-  }, [user?.id]);
+  , [user?.id]);
 
   const totalSeats   = events.reduce((s, e) => s + (e.total_seats  || 0), 0);
   const totalBooked  = events.reduce((s, e) => s + (e.booked_seats || 0), 0);

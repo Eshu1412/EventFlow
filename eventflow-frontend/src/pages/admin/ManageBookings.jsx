@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut,
-         Search, Download, Ticket } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut, Search, Download, Ticket, User, BookOpen } from "lucide-react";
 import axios from "axios";
 
 const authHeaders = () => ({
@@ -30,7 +29,7 @@ export default function ManageBookings() {
       .then(r => setBookings(r.data))
       .catch(() => setBookings(MOCK))
       .finally(() => setLoading(false));
-  }, []);
+  , []);
 
   const filtered = bookings.filter(b =>
     (b.user_name  || "").toLowerCase().includes(search.toLowerCase()) ||
