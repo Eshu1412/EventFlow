@@ -1,9 +1,9 @@
 // src/pages/auth/ForgotPassword.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Mail, ArrowLeft, CheckCircle, AlertCircle, Send } from "lucide-react";
 import ThemeToggle from "../../components/ThemeToggle";
+import { Mail, ArrowLeft, CheckCircle, AlertCircle, Send, Clock, ShieldCheck, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
@@ -11,17 +11,78 @@ export default function ForgotPassword() {
   const [loading,      setLoading]      = useState(false);
   const [sent,         setSent]         = useState(false);
   const [error,        setError]        = useState("");
+  const [fieldErrors,  setFieldErrors]  = useState({});
   const [devResetUrl,  setDevResetUrl]  = useState(""); // dev-mode fallback
 
-  const submit = async (e) => {
+  const [resendTimer, setResendTimer] = useState(() => {
+    const saved = localStorage.getItem("passwordResetTimer");
+    if (saved) {
+      const { expiresAt } = JSON.parse(saved);
+      const remaining = Math.floor((expiresAt - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      const saved = localStorage.getItem("passwordResetTimer");
+      if (!saved) {
+        localStorage.setItem("passwordResetTimer", JSON.stringify({ expiresAt: Date.now() + resendTimer * 1000 }));
+      }
+      interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem("passwordResetTimer");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      localStorage.removeItem("passwordResetTimer");
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const startTimer = (seconds) => {
+    localStorage.setItem("passwordResetTimer", JSON.stringify({ expiresAt: Date.now() + seconds * 1000 }));
+    setResendTimer(seconds);
+  };
+
+  const formatTimer = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: "" });
+  };
+
+  const handleInvalid = (e) => {
     e.preventDefault();
+    setFieldErrors({ ...fieldErrors, email: e.target.validationMessage || "Please fill in this field." });
+  };
+
+  const submit = async (e) => {
+    if (e) e.preventDefault();
+    if (resendTimer > 0) return;
     setError(""); setLoading(true); setDevResetUrl("");
     try {
       const { data } = await axios.post("/api/auth/password-reset/", { email });
-      // Dev-mode fallback: backend couldn't email, returns reset_url directly
       if (data?.reset_url) setDevResetUrl(data.reset_url);
       setSent(true);
+      startTimer(600); // 10 minutes
     } catch (err) {
+      if (err.response?.status === 429 && err.response?.data?.remaining_seconds) {
+        startTimer(err.response.data.remaining_seconds);
+        setSent(true);
+        setError(err.response.data.error);
+        return;
+      }
       setError(err.response?.data?.error || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -35,7 +96,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="auth-layout" style={{ paddingTop: 0 }}>
-      <ThemeToggle fixed />
+      <ThemeToggle fixed className="auth-theme-toggle" />
 
       {/* Left visual panel */}
       <div className="auth-visual">
@@ -55,7 +116,11 @@ export default function ForgotPassword() {
         <motion.div className="auth-stats"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.15 }}>
-          {[["🔒", "Secure"], ["⚡", "Instant"], ["✅", "Simple"]].map(([icon, label]) => (
+          {[
+            [<ShieldCheck size={32} strokeWidth={1.5} />, "Secure"],
+            [<Zap size={32} strokeWidth={1.5} />, "Instant"],
+            [<CheckCircle size={32} strokeWidth={1.5} />, "Simple"]
+          ].map(([icon, label]) => (
             <div key={label}>
               <span className="auth-stat-num">{icon}</span>
               <span className="auth-stat-lbl">{label}</span>
@@ -132,9 +197,17 @@ export default function ForgotPassword() {
                 </a>
               )}
 
-              <button className="btn btn-outline btn-full" onClick={() => { setSent(false); setEmail(""); }}>
-                <Send size={14} /> Resend Email
-              </button>
+              {resendTimer > 0 ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", color: "var(--muted)", fontSize: "0.85rem", margin: "1rem 0" }}>
+                  Please wait <Clock size={14} style={{ color: "var(--gold)" }} />
+                  <strong style={{ color: "var(--gold)" }}>{formatTimer(resendTimer)}</strong> before resending.
+                </div>
+              ) : (
+                <button className="btn btn-outline btn-full" onClick={submit} disabled={loading}>
+                  {loading ? <span className="loading-spinner" /> : <Send size={14} />}
+                  Resend Email
+                </button>
+              )}
               <div style={{ marginTop: "1rem", textAlign: "center" }}>
                 <Link to="/login" style={{ fontSize: ".85rem", color: "var(--gold)" }}>
                   Back to Login
@@ -166,14 +239,24 @@ export default function ForgotPassword() {
                       pointerEvents: "none",
                     }} />
                     <input
+                      name="email"
                       type="email"
                       className="form-control"
                       placeholder="you@example.com"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
+                      onInvalid={handleInvalid}
                       required autoFocus
-                      style={{ paddingLeft: "2.75rem" }}
+                      style={{ 
+                        paddingLeft: "2.75rem",
+                        borderColor: fieldErrors.email ? "rgba(248,113,113,0.5)" : undefined
+                      }}
                     />
+                    {fieldErrors.email && (
+                      <div className="custom-tooltip">
+                        <AlertCircle size={14} style={{ color: "#f87171" }} /> {fieldErrors.email}
+                      </div>
+                    )}
                   </div>
                 </div>
 

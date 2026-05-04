@@ -6,7 +6,6 @@ import axios from "axios";
 import { LayoutDashboard, Calendar, BookOpen, User, LogOut,
          Ticket, ArrowUpRight, Clock, CheckCircle, XCircle, MapPin } from "lucide-react";
 import { formatDate } from "../../utils/helpers";
-import ThemeToggle from "../../components/ThemeToggle";
 
 const MOCK_BOOKINGS = [
   { id:"b1", event_title:"Neon Beats Festival",  event_date:"2026-07-12", event_location:"MSG, NYC",       status:"confirmed" },
@@ -72,7 +71,6 @@ export default function UserDashboard() {
             <div className="sidebar-user-name">{name}</div>
             <div className="sidebar-user-role">User</div>
           </div>
-          <ThemeToggle />
           <button onClick={doLogout} style={{ color:"var(--muted)" }} title="Logout">
             <LogOut size={14} />
           </button>

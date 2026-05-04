@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { Eye, EyeOff, ArrowRight, CheckCircle, AlertCircle, Lock } from "lucide-react";
 import ThemeToggle from "../../components/ThemeToggle";
+import { Eye, EyeOff, ArrowRight, CheckCircle, AlertCircle, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ResetPassword() {
@@ -18,6 +18,7 @@ export default function ResetPassword() {
   const [loading,   setLoading]   = useState(false);
   const [success,   setSuccess]   = useState(false);
   const [error,     setError]     = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // Redirect to login after success
   useEffect(() => {
@@ -39,6 +40,11 @@ export default function ResetPassword() {
     if (score === 1) return { label: "Good", color: "#34d399", pct: 75 };
     return              { label: "Strong", color: "#4ade80", pct: 100 };
   })();
+
+  const handleInvalid = (e) => {
+    e.preventDefault();
+    setFieldErrors(prev => ({ ...prev, [e.target.name]: e.target.validationMessage || "Please fill in this field." }));
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -67,9 +73,9 @@ export default function ResetPassword() {
 
   return (
     <div className="auth-layout" style={{ paddingTop: 0 }}>
-      <ThemeToggle fixed />
+      <ThemeToggle fixed className="auth-theme-toggle" />
 
-      {/* Left visual */}
+      {/* Visual panel */}
       <div className="auth-visual">
         <Link to="/" className="auth-visual-brand">Event<em>Flow</em></Link>
 
@@ -179,13 +185,21 @@ export default function ResetPassword() {
                   <label className="form-label">New password</label>
                   <div style={{ position: "relative" }}>
                     <input
+                      name="password"
                       type={showPw ? "text" : "password"}
                       className="form-control"
                       placeholder="••••••••"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: "" });
+                      }}
+                      onInvalid={handleInvalid}
                       required autoFocus
-                      style={{ paddingRight: "3rem" }}
+                      style={{ 
+                        paddingRight: "3rem",
+                        borderColor: fieldErrors.password ? "rgba(248,113,113,0.5)" : undefined
+                      }}
                     />
                     <button type="button" onClick={() => setShowPw(!showPw)} style={{
                       position: "absolute", right: "1rem", top: "50%",
@@ -193,6 +207,11 @@ export default function ResetPassword() {
                     }}>
                       {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
+                    {fieldErrors.password && (
+                      <div className="custom-tooltip">
+                        <AlertCircle size={14} style={{ color: "#f87171" }} /> {fieldErrors.password}
+                      </div>
+                    )}
                   </div>
                   {/* Strength bar */}
                   {password.length > 0 && (
@@ -216,15 +235,20 @@ export default function ResetPassword() {
                   <label className="form-label">Confirm password</label>
                   <div style={{ position: "relative" }}>
                     <input
+                      name="confirm"
                       type={showCf ? "text" : "password"}
                       className="form-control"
                       placeholder="••••••••"
                       value={confirm}
-                      onChange={(e) => setConfirm(e.target.value)}
+                      onChange={(e) => {
+                        setConfirm(e.target.value);
+                        if (fieldErrors.confirm) setFieldErrors({ ...fieldErrors, confirm: "" });
+                      }}
+                      onInvalid={handleInvalid}
                       required
                       style={{
                         paddingRight: "3rem",
-                        borderColor: confirm && confirm !== password ? "rgba(248,113,113,0.5)" : undefined,
+                        borderColor: (confirm && confirm !== password) || fieldErrors.confirm ? "rgba(248,113,113,0.5)" : undefined,
                       }}
                     />
                     <button type="button" onClick={() => setShowCf(!showCf)} style={{
@@ -233,6 +257,11 @@ export default function ResetPassword() {
                     }}>
                       {showCf ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
+                    {fieldErrors.confirm && (
+                      <div className="custom-tooltip">
+                        <AlertCircle size={14} style={{ color: "#f87171" }} /> {fieldErrors.confirm}
+                      </div>
+                    )}
                   </div>
                   {confirm && confirm !== password && (
                     <span style={{ fontSize: ".75rem", color: "#f87171" }}>Passwords do not match</span>

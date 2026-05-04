@@ -319,11 +319,24 @@ def password_reset_request(request):
     if not email:
         return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        user = User.objects.get(email__iexact=email)
-    except User.DoesNotExist:
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
         # Return 200 to avoid leaking which emails are registered
         return Response({'message': 'If that email is registered, a reset link has been sent.'}, status=status.HTTP_200_OK)
+
+    from django.utils import timezone
+    from datetime import timedelta
+
+    # 10-minute rate limit for password reset requests
+    existing_token = PasswordResetToken.objects.filter(user=user, used=False).order_by('-created_at').first()
+    if existing_token:
+        time_since_creation = timezone.now() - existing_token.created_at
+        if time_since_creation < timedelta(minutes=10):
+            remaining = int((timedelta(minutes=10) - time_since_creation).total_seconds())
+            return Response({
+                'error': f'Please wait before requesting a new reset link. Try again in {remaining//60}m {remaining%60}s.',
+                'remaining_seconds': remaining
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
     # Invalidate old unused tokens for this user
     PasswordResetToken.objects.filter(user=user, used=False).delete()
@@ -342,7 +355,7 @@ def password_reset_request(request):
                 "title": "Reset your password",
                 "description": f"Hi {user.name or user.email}, we received a request to reset the password for your EventFlow account. Click the button below to choose a new password. This link expires in 1 hour.",
                 "link": reset_url,
-                "button_text": "Verify Now",
+                "button_text": "Reset Password",
             },
         )
     except Exception as e:
@@ -399,6 +412,22 @@ def password_reset_confirm(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+def check_email(request):
+    """
+    POST /api/auth/check-email/
+    Quick check to see if an email already exists.
+    """
+    email = (request.data.get('email') or '').strip().lower()
+    if not email:
+        return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    if User.objects.filter(email__iexact=email).exists():
+        return Response({'exists': True}, status=status.HTTP_200_OK)
+    return Response({'exists': False}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def send_registration_otp(request):
     """
     POST /api/auth/send-otp/
@@ -410,6 +439,8 @@ def send_registration_otp(request):
     from django.conf import settings
     from .email_backend import send_email_via_emailjs
     import json
+    from django.utils import timezone
+    from datetime import timedelta
 
     email = (request.data.get('email') or '').strip().lower()
     if not email:
@@ -418,11 +449,26 @@ def send_registration_otp(request):
     if User.objects.filter(email__iexact=email).exists():
         return Response({'error': 'An account with this email already exists.'}, status=status.HTTP_409_CONFLICT)
 
+    role = request.data.get('role', 'user')
+    if role not in ['user', 'organizer', 'admin']:
+        return Response({'error': 'Invalid user role selected.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # 10-minute rate limit for resends
+    existing_otp = EmailOTP.objects.filter(email=email).order_by('-created_at').first()
+    if existing_otp and not existing_otp.verified:
+        time_since_creation = timezone.now() - existing_otp.created_at
+        if time_since_creation < timedelta(minutes=10):
+            remaining = int((timedelta(minutes=10) - time_since_creation).total_seconds())
+            return Response({
+                'error': f'Please wait before requesting a new OTP. Try again in {remaining//60}m {remaining%60}s.',
+                'remaining_seconds': remaining
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
     # Collect registration data to store server-side
     pending_data = {
         'name': (request.data.get('name') or '').strip(),
         'password': request.data.get('password', ''),
-        'role': request.data.get('role', 'user'),
+        'role': role,
     }
 
     # Generate OTP (deletes old OTPs for this email)

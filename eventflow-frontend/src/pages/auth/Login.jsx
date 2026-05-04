@@ -3,8 +3,8 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { loginUser } from "../../api/auth";
-import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 import ThemeToggle from "../../components/ThemeToggle";
+import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const ROLE_REDIRECT = { user: "/dashboard", organizer: "/organizer", admin: "/admin" };
@@ -13,6 +13,7 @@ export default function Login() {
   const [form,    setForm]    = useState({ email: "", password: "" });
   const [showPw,  setShowPw]  = useState(false);
   const [error,   setError]   = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const { login }   = useAuth();
@@ -20,7 +21,17 @@ export default function Login() {
   const location    = useLocation();
   const justRegistered = location.state?.registered;
 
-  const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handle = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (fieldErrors[e.target.name]) {
+      setFieldErrors(prev => ({ ...prev, [e.target.name]: "" }));
+    }
+  };
+
+  const handleInvalid = (e) => {
+    e.preventDefault();
+    setFieldErrors(prev => ({ ...prev, [e.target.name]: e.target.validationMessage || "Please fill in this field." }));
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -52,7 +63,7 @@ export default function Login() {
 
   return (
     <div className="auth-layout" style={{ paddingTop: 0 }}>
-      <ThemeToggle fixed />
+      <ThemeToggle fixed className="auth-theme-toggle" />
 
       {/* Visual panel */}
       <div className="auth-visual">
@@ -106,11 +117,19 @@ export default function Login() {
           <motion.form variants={item} onSubmit={submit} className="form-stack">
             <div className="form-group">
               <label className="form-label">Email address</label>
-              <input
-                name="email" type="email" className="form-control"
-                placeholder="you@example.com"
-                value={form.email} onChange={handle} required autoFocus
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  name="email" type="email" className="form-control"
+                  placeholder="you@example.com"
+                  value={form.email} onChange={handle} onInvalid={handleInvalid} required autoFocus
+                  style={{ borderColor: fieldErrors.email ? "rgba(248,113,113,0.5)" : undefined }}
+                />
+                {fieldErrors.email && (
+                  <div className="custom-tooltip">
+                    <AlertCircle size={14} style={{ color: "#f87171" }} /> {fieldErrors.email}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="form-group">
@@ -119,8 +138,11 @@ export default function Login() {
                 <input
                   name="password" type={showPw ? "text" : "password"}
                   className="form-control" placeholder="••••••••"
-                  value={form.password} onChange={handle} required
-                  style={{ paddingRight:"3rem" }}
+                  value={form.password} onChange={handle} onInvalid={handleInvalid} required
+                  style={{ 
+                    paddingRight:"3rem",
+                    borderColor: fieldErrors.password ? "rgba(248,113,113,0.5)" : undefined
+                  }}
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)} style={{
                   position:"absolute", right:"1rem", top:"50%",
@@ -128,6 +150,11 @@ export default function Login() {
                 }}>
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
+                {fieldErrors.password && (
+                  <div className="custom-tooltip">
+                    <AlertCircle size={14} style={{ color: "#f87171" }} /> {fieldErrors.password}
+                  </div>
+                )}
               </div>
             </div>
 

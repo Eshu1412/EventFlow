@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { verifyOtp } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
-import ThemeToggle from "../../components/ThemeToggle";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, ArrowRight } from "lucide-react";
 
@@ -92,7 +91,6 @@ export default function VerifyEmail() {
 
   return (
     <div className="auth-layout" style={{ paddingTop: 0 }}>
-      <ThemeToggle fixed />
 
       <div className="auth-visual">
         <Link to="/" className="auth-visual-brand">Event<em>Flow</em></Link>

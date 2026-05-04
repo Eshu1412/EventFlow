@@ -9,3 +9,4 @@ export const getProfile    = ()     => axios.get(`${BASE}/auth/profile/`);
 export const updateProfile = (data) => axios.put(`${BASE}/auth/profile/`,   data);
 export const sendOtp       = (data) => axios.post(`${BASE}/auth/send-otp/`, data);
 export const verifyOtp     = (data) => axios.post(`${BASE}/auth/verify-otp/`, data);
+export const checkEmail    = (data) => axios.post(`${BASE}/auth/check-email/`, data);

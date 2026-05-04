@@ -23,6 +23,34 @@ export default function Navbar() {
         Event<em>Flow</em>
       </Link>
 
+      <div className={`nav-content ${menuOpen ? 'open' : ''}`}>
+        <div className="nav-links">
+          <Link to="/events" className="nav-link" onClick={() => setMenuOpen(false)}>Events</Link>
+          <Link to="/#categories" className="nav-link" onClick={() => setMenuOpen(false)}>Categories</Link>
+          <Link to="/#about" className="nav-link" onClick={() => setMenuOpen(false)}>About</Link>
+        </div>
+      </div>
+
+      <div className="nav-actions">
+        <ThemeToggle className="desktop-theme-toggle" />
+
+        {user ? (
+          <>
+            <Link to={dashboardLink()} className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>
+              <LayoutDashboard size={14} /> <span className="hide-mobile-text">Dashboard</span>
+            </Link>
+            <button onClick={handleLogout} className="btn btn-outline btn-sm">
+              <LogOut size={14} /> <span className="hide-mobile-text">Logout</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>Sign In</Link>
+            <Link to="/register" className="btn btn-primary btn-sm hide-mobile-text" onClick={() => setMenuOpen(false)}>Get Started</Link>
+          </>
+        )}
+      </div>
+
       <button
         type="button"
         className="mobile-menu-btn"
@@ -32,34 +60,6 @@ export default function Navbar() {
       >
         {menuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
-
-      <div className={`nav-content ${menuOpen ? 'open' : ''}`}>
-        <div className="nav-links">
-          <Link to="/events" className="nav-link" onClick={() => setMenuOpen(false)}>Events</Link>
-          <Link to="/#categories" className="nav-link" onClick={() => setMenuOpen(false)}>Categories</Link>
-          <Link to="/#about" className="nav-link" onClick={() => setMenuOpen(false)}>About</Link>
-        </div>
-
-        <div className="nav-actions">
-          <ThemeToggle />
-
-          {user ? (
-            <>
-              <Link to={dashboardLink()} className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>
-                <LayoutDashboard size={14} /> Dashboard
-              </Link>
-              <button onClick={handleLogout} className="btn btn-outline btn-sm">
-                <LogOut size={14} /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>Sign In</Link>
-              <Link to="/register" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>Get Started</Link>
-            </>
-          )}
-        </div>
-      </div>
     </nav>
   );
 }

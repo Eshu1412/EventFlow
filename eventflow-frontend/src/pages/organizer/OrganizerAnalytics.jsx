@@ -164,7 +164,7 @@ export default function OrganizerAnalytics() {
   useEffect(() => {
     Promise.all([
       axios.get("/api/events/").catch(() => ({ data: [] })),
-      axios.get("/organizer/bookings/").catch(() => ({ data: [] })),
+      axios.get("/api/organizer/bookings/").catch(() => ({ data: [] })),
     ]).then(([e, b]) => {
       const myEvents = user?.id ? (e.data || []).filter(ev => ev.organizer_id === user.id) : (e.data || []);
       setEvents(myEvents);

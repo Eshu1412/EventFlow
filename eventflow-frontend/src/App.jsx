@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PageTransition from "./components/PageTransition";
+import ThemeToggle from "./components/ThemeToggle";
 
 import LandingPage         from "./pages/LandingPage";
 import Login               from "./pages/auth/Login";
@@ -32,6 +33,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ThemeToggle fixed className="mobile-theme-toggle" />
           {/* PageTransition must be inside BrowserRouter to access useLocation */}
           <PageTransition>
             <Routes>

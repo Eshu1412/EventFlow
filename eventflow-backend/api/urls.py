@@ -21,6 +21,7 @@ urlpatterns = [
     path('bookings/<int:pk>/ticket/', views.download_ticket, name='download_ticket'),
 
     # OTP email verification
+    path('auth/check-email/', views.check_email, name='check_email'),
     path('auth/send-otp/', views.send_registration_otp, name='send_registration_otp'),
     path('auth/verify-otp/', views.verify_registration_otp, name='verify_registration_otp'),
 

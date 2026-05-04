@@ -6,7 +6,7 @@ import { useTheme } from "../context/ThemeContext";
  * Floating or inline theme toggle button.
  * Pass `fixed` to position it as a floating corner button.
  */
-export default function ThemeToggle({ fixed = false, style = {} }) {
+export default function ThemeToggle({ fixed = false, style = {}, className = "" }) {
   const { isDark, toggle } = useTheme();
 
   const baseStyle = {
@@ -32,6 +32,7 @@ export default function ThemeToggle({ fixed = false, style = {} }) {
 
   return (
     <button
+      className={`theme-toggle ${className}`.trim()}
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       style={baseStyle}
