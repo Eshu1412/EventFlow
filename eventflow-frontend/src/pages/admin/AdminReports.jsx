@@ -358,7 +358,9 @@ export default function AdminReports() {
     <div className="app-layout" style={{ paddingTop: 0 }}>
       {/* Sidebar */}
       <aside className="sidebar">
-        <div className="sidebar-logo"><div className="sidebar-logo-text">Event<em>Flow</em></div></div>
+        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
+          <div className="sidebar-logo-text">Event<em>Flow</em></div>
+        </Link>
         <nav className="sidebar-nav">
           <span className="sidebar-nav-section">Admin</span>
           {nav.map(({ to, icon: Icon, label, active }) => (
@@ -366,6 +368,11 @@ export default function AdminReports() {
               <Icon size={16} /> {label}
             </Link>
           ))}
+
+          <span className="sidebar-nav-section" style={{ marginTop: "1.5rem" }}>Personal</span>
+          <Link to="/events" className="sidebar-nav-link"><Calendar size={16} /> Browse Events</Link>
+          <Link to="/my-bookings" className="sidebar-nav-link"><Ticket size={16} /> My Bookings</Link>
+          <Link to="/profile" className="sidebar-nav-link"><User size={16} /> Profile</Link>
         </nav>
         <div className="sidebar-user">
           <div className="sidebar-avatar" style={{ background: "#dc2626" }}>{name[0].toUpperCase()}</div>

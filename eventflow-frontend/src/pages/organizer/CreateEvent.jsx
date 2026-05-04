@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createEvent } from "../../api/events";
 import { LayoutDashboard, Plus, Users, BarChart2, Settings, LogOut,
-         Upload, Check, ArrowRight, ArrowLeft, Eye } from "lucide-react";
+         Upload, Check, ArrowRight, ArrowLeft, Eye, User, Calendar, Ticket, BookOpen } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const CATEGORIES = ["Music","Tech","Sports","Food","Art","Business","Conference","Workshop","Other"];
@@ -46,7 +46,9 @@ export default function CreateEvent() {
   return (
     <div className="app-layout">
       <aside className="sidebar">
-        <div className="sidebar-logo"><div className="sidebar-logo-text">Event<em>Flow</em></div></div>
+        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
+          <div className="sidebar-logo-text">Event<em>Flow</em></div>
+        </Link>
         <nav className="sidebar-nav">
           <Link to="/organizer" className="sidebar-nav-link"><LayoutDashboard size={17} /> Dashboard</Link>
           <Link to="/organizer/create" className="sidebar-nav-link active"><Plus size={17} /> Create Event</Link>

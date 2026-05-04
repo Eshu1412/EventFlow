@@ -26,6 +26,7 @@ import ManageUsers         from "./pages/admin/ManageUsers";
 import ManageEvents        from "./pages/admin/ManageEvents";
 import ManageBookings      from "./pages/admin/ManageBookings";
 import AdminReports        from "./pages/admin/AdminReports";
+import AdminSettings       from "./pages/admin/AdminSettings";
 import UserProfile         from "./pages/user/UserProfile";
 
 export default function App() {
@@ -47,9 +48,13 @@ export default function App() {
               <Route path="/events"     element={<EventList />} />
               <Route path="/events/:id" element={<EventDetail />} />
 
-              {/* User (role: user) */}
+              {/* User Dashboard (strict user role only) */}
               <Route element={<ProtectedRoute roles={["user"]} />}>
                 <Route path="/dashboard"   element={<UserDashboard />} />
+              </Route>
+
+              {/* Universal Authenticated Features (profile, bookings) */}
+              <Route element={<ProtectedRoute roles={["user", "organizer", "admin"]} />}>
                 <Route path="/my-bookings" element={<BookingHistory />} />
                 <Route path="/profile"     element={<UserProfile />} />
               </Route>
@@ -70,6 +75,7 @@ export default function App() {
                 <Route path="/admin/events"   element={<ManageEvents />} />
                 <Route path="/admin/bookings" element={<ManageBookings />} />
                 <Route path="/admin/reports"  element={<AdminReports />} />
+                <Route path="/admin/settings" element={<AdminSettings />} />
               </Route>
             </Routes>
           </PageTransition>

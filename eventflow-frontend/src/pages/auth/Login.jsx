@@ -7,7 +7,7 @@ import ThemeToggle from "../../components/ThemeToggle";
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-const ROLE_REDIRECT = { user: "/dashboard", organizer: "/organizer", admin: "/admin" };
+const ROLE_REDIRECT = { user: "/events", organizer: "/organizer", admin: "/admin" };
 
 export default function Login() {
   const [form,    setForm]    = useState({ email: "", password: "" });
@@ -39,7 +39,7 @@ export default function Login() {
     try {
       const { data } = await loginUser(form);
       login(data.user, data.token);
-      const dest = ROLE_REDIRECT[data.user?.role] || "/dashboard";
+      const dest = location.state?.from?.pathname || ROLE_REDIRECT[data.user?.role] || "/events";
       navigate(dest, { replace: true });
     } catch (err) {
       const msg = err.response?.data?.error || err.response?.data?.message || "Invalid credentials. Please try again.";
