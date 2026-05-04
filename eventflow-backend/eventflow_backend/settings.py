@@ -190,3 +190,7 @@ DEFAULT_FROM_EMAIL   = os.environ.get("DEFAULT_FROM_EMAIL", "EventFlow <noreply@
 # Base URL of the React frontend (used in password-reset email links)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 
+# Increase memory limit for large base64 image uploads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+

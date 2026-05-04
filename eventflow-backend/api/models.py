@@ -26,7 +26,7 @@ class Event(models.Model):
     total_seats = models.IntegerField(default=100)
     booked_seats = models.IntegerField(default=0)
     price = models.FloatField(default=0.0)
-    image_url = models.CharField(max_length=300, blank=True, null=True)
+    image_url = models.TextField(blank=True, null=True)
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
     created_at = models.DateTimeField(auto_now_add=True)
 

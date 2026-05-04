@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, Event, Booking, Review
+from .image_utils import compress_image_base64
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,6 +18,11 @@ class EventSerializer(serializers.ModelSerializer):
             'location', 'date', 'total_seats', 'booked_seats',
             'available_seats', 'price', 'image_url', 'organizer_id', 'organizer_name'
         ]
+
+    def validate_image_url(self, value):
+        if value and value.startswith('data:image/'):
+            return compress_image_base64(value)
+        return value
 
 class BookingSerializer(serializers.ModelSerializer):
     user_name      = serializers.CharField(source='user.name',          read_only=True)

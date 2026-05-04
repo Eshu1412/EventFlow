@@ -87,20 +87,12 @@ def events_list(request):
     elif request.method == 'POST':
         if not IsOrganizerOrAdmin().has_permission(request, None):
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        data = request.data.copy()
-        # We manually create the event to match the previous structure
-        event = Event.objects.create(
-            title=data.get('title'),
-            description=data.get('description'),
-            category=data.get('category'),
-            location=data.get('location'),
-            date=data.get('date'),
-            total_seats=data.get('total_seats', 100),
-            price=data.get('price', 0),
-            image_url=data.get('image_url'),
-            organizer=request.user
-        )
-        return Response(EventSerializer(event).data, status=status.HTTP_201_CREATED)
+        
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(organizer=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([AllowAny])
