@@ -34,7 +34,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <ThemeToggle fixed className="mobile-theme-toggle" />
+          {/* Global theme toggle removed */}
           {/* PageTransition must be inside BrowserRouter to access useLocation */}
           <PageTransition>
             <Routes>
@@ -63,6 +63,7 @@ export default function App() {
               <Route element={<ProtectedRoute roles={["organizer"]} />}>
                 <Route path="/organizer"               element={<OrganizerDashboard />} />
                 <Route path="/organizer/create"        element={<CreateEvent />} />
+                <Route path="/organizer/edit/:id"      element={<CreateEvent />} />
                 <Route path="/organizer/registrations" element={<ManageRegistrations />} />
                 <Route path="/organizer/analytics"     element={<OrganizerAnalytics />} />
                 <Route path="/organizer/settings"      element={<OrganizerSettings />} />

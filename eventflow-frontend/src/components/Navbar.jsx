@@ -32,11 +32,9 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <ThemeToggle className="desktop-theme-toggle" />
-
         {user ? (
           <>
-            <Link to={dashboardLink()} className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>
+            <Link to={dashboardLink()} className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>
               <LayoutDashboard size={14} /> <span className="hide-mobile-text">Dashboard</span>
             </Link>
             <button onClick={handleLogout} className="btn btn-outline btn-sm">
@@ -49,6 +47,7 @@ export default function Navbar() {
             <Link to="/register" className="btn btn-primary btn-sm hide-mobile-text" onClick={() => setMenuOpen(false)}>Get Started</Link>
           </>
         )}
+        <ThemeToggle />
       </div>
 
       <button

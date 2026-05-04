@@ -1,3 +1,4 @@
+import ThemeToggle from "../../components/ThemeToggle";
 // src/pages/admin/ManageUsers.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,7 +30,7 @@ export default function ManageUsers() {
     axios.get("/api/admin/users/")
       .then(r => { setUsers(r.data); setLoading(false); })
       .catch(() => { setUsers(MOCK); setLoading(false); });
-  , []);
+  }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Permanently delete this user?")) return;
@@ -65,7 +66,7 @@ export default function ManageUsers() {
     { to: "/admin/events", icon: Calendar, label: "Manage Events" },
     { to: "/admin/bookings", icon: Ticket, label: "Bookings" },
     { to: "/admin/reports", icon: BarChart, label: "Reports" },
-    { to: "#", icon: Settings, label: "Settings" },
+    { to: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
   return (
@@ -179,6 +180,9 @@ export default function ManageUsers() {
             </table>
           </div>
         </div>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );

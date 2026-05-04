@@ -21,7 +21,7 @@ export default function ThemeToggle({ fixed = false, style = {}, className = "" 
     justifyContent: "center",
     cursor: "pointer",
     flexShrink: 0,
-    zIndex: 200,
+    zIndex: 2000,
     ...(fixed ? {
       position: "fixed",
       top: "1.25rem",

@@ -1,3 +1,4 @@
+import ThemeToggle from "../../components/ThemeToggle";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -36,16 +37,16 @@ export default function AdminSettings() {
       setLoading(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    , 1000);
+    }, 1000);
   };
 
   const nav = [
-    { to: "/admin",          icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/admin/users",    icon: Users,           label: "Manage Users" },
-    { to: "/admin/events",   icon: Calendar,        label: "Manage Events" },
-    { to: "/admin/bookings", icon: Ticket,          label: "Bookings" },
-    { to: "/admin/reports",  icon: BarChart,        label: "Reports" },
-    { to: "/admin/settings", icon: Settings,        label: "Settings", active: true },
+    { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/admin/users", icon: Users, label: "Manage Users" },
+    { to: "/admin/events", icon: Calendar, label: "Manage Events" },
+    { to: "/admin/bookings", icon: Ticket, label: "Bookings" },
+    { to: "/admin/reports", icon: BarChart, label: "Reports" },
+    { to: "/admin/settings", icon: Settings, label: "Settings", active: true },
   ];
 
   return (
@@ -87,24 +88,24 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        <div style={{ 
-          maxWidth: "800px", 
-          background: "var(--ink-3)", 
-          border: "1px solid var(--border)", 
-          borderRadius: "var(--r-md)", 
-          padding: "2rem" 
+        <div style={{
+          maxWidth: "800px",
+          background: "var(--ink-3)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--r-md)",
+          padding: "2rem"
         }}>
           <form onSubmit={handleSave}>
             <div style={{ marginBottom: "2rem" }}>
               <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--white)", marginBottom: "1rem", fontFamily: "var(--font-display)" }}>
                 <Shield size={18} /> General Settings
               </h3>
-              
+
               <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label" style={{ color: "var(--white)" }}>Site Name</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   name="siteName"
                   value={settings.siteName}
                   onChange={handleChange}
@@ -114,8 +115,8 @@ export default function AdminSettings() {
 
               <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label" style={{ color: "var(--white)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     name="allowRegistrations"
                     checked={settings.allowRegistrations}
                     onChange={handleChange}
@@ -127,8 +128,8 @@ export default function AdminSettings() {
 
               <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label" style={{ color: "var(--white)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     name="requireEmailVerification"
                     checked={settings.requireEmailVerification}
                     onChange={handleChange}
@@ -143,12 +144,12 @@ export default function AdminSettings() {
               <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--white)", marginBottom: "1rem", fontFamily: "var(--font-display)" }}>
                 <Settings size={18} /> System Limits
               </h3>
-              
+
               <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label" style={{ color: "var(--white)" }}>Max Events Per Organizer</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
+                <input
+                  type="number"
+                  className="form-control"
                   name="maxEventsPerOrganizer"
                   value={settings.maxEventsPerOrganizer}
                   onChange={handleChange}
@@ -159,8 +160,8 @@ export default function AdminSettings() {
 
               <div className="form-group" style={{ marginBottom: "1.5rem" }}>
                 <label className="form-label" style={{ color: "var(--white)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     name="maintenanceMode"
                     checked={settings.maintenanceMode}
                     onChange={handleChange}
@@ -179,6 +180,9 @@ export default function AdminSettings() {
             </div>
           </form>
         </div>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );

@@ -18,7 +18,7 @@ except User.DoesNotExist:
     exit(1)
 
 categories = ['Tech', 'Music', 'Sports', 'Food', 'Art', 'Business']
-locations = ['New York, NY', 'San Francisco, CA', 'London, UK', 'Berlin, Germany', 'Tokyo, Japan', 'Sydney, Australia', 'Online', 'Mumbai, India', 'Paris, France', 'Toronto, Canada']
+locations = ['Mumbai, India', 'Delhi, India', 'Bengaluru, India', 'Hyderabad, India', 'Chennai, India', 'Kolkata, India', 'Pune, India', 'Ahmedabad, India', 'Jaipur, India', 'Surat, India']
 adjectives = ['Global', 'Annual', 'Ultimate', 'Advanced', 'Interactive', 'Next-Gen', 'Classic', 'Creative', 'Modern', 'Exclusive']
 nouns = ['Summit', 'Festival', 'Workshop', 'Conference', 'Masterclass', 'Expo', 'Meetup', 'Gala', 'Retreat', 'Showcase']
 

@@ -260,14 +260,7 @@ export default function EventList() {
                 }
               </p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-              <SlidersHorizontal size={15} color="var(--muted)" />
-              <select className="form-control" style={{ width: "auto", padding: ".45rem .9rem" }}
-                value={sort} onChange={e => { setSort(e.target.value); setPage(1); }}>
-                <option value="date">Sort: Date</option>
-                <option value="price">Sort: Price</option>
-              </select>
-            </div>
+            {/* Sort is handled in the filter sidebar */}
           </div>
 
           {/* ── Error state ── */}

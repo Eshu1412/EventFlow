@@ -1,3 +1,4 @@
+import ThemeToggle from "../../components/ThemeToggle";
 // src/pages/admin/ManageBookings.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -29,7 +30,7 @@ export default function ManageBookings() {
       .then(r => setBookings(r.data))
       .catch(() => setBookings(MOCK))
       .finally(() => setLoading(false));
-  , []);
+  }, []);
 
   const filtered = bookings.filter(b =>
     (b.user_name  || "").toLowerCase().includes(search.toLowerCase()) ||
@@ -67,7 +68,7 @@ export default function ManageBookings() {
             { to: "/admin/events",   icon: Calendar,         label: "Manage Events" },
             { to: "/admin/bookings", icon: Ticket,           label: "Manage Bookings", active: true },
             { to: "/admin/reports",  icon: BarChart,         label: "Reports" },
-            { to: "#",               icon: Settings,         label: "Settings" },
+            { to: "/admin/settings", icon: Settings,         label: "Settings" },
           ].map(({ to, icon: Icon, label, active }) => (
             <Link key={label} to={to} className={`sidebar-nav-link ${active ? "active" : ""}`}>
               <Icon size={17} /> {label}
@@ -159,6 +160,9 @@ export default function ManageBookings() {
             </div>
           </div>
         </div>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );

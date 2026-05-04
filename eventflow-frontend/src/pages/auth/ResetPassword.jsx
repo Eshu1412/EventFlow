@@ -73,7 +73,7 @@ export default function ResetPassword() {
 
   return (
     <div className="auth-layout" style={{ paddingTop: 0 }}>
-      <ThemeToggle fixed className="auth-theme-toggle" />
+      <ThemeToggle fixed style={{ position: "fixed", top: "1.5rem", right: "1.5rem", zIndex: 1000 }} />
 
       {/* Visual panel */}
       <div className="auth-visual">

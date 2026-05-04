@@ -1,3 +1,4 @@
+import ThemeToggle from "../../components/ThemeToggle";
 // src/pages/organizer/OrganizerSettings.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -41,7 +42,7 @@ export default function OrganizerSettings() {
         }
       })
       .finally(() => setLoading(false));
-  , []);
+  }, []);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -71,6 +72,9 @@ export default function OrganizerSettings() {
       </aside>
       <main className="main-content" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ color: "var(--muted)" }}>Loading settings…</p>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );
@@ -186,6 +190,9 @@ export default function OrganizerSettings() {
             </div>
           </div>
         </div>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );

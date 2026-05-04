@@ -1,3 +1,4 @@
+import ThemeToggle from "../../components/ThemeToggle";
 // src/pages/user/BookingHistory.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -246,6 +247,9 @@ export default function BookingHistory() {
             })}
           </div>
         )}
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );

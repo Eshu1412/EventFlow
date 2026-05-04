@@ -1,9 +1,10 @@
+import ThemeToggle from "../../components/ThemeToggle";
 // src/pages/organizer/OrganizerDashboard.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import { LayoutDashboard, Calendar, Plus, Users, BarChart2, Settings, LogOut, Edit, Trash2, Eye, ArrowUpRight, Ticket, User, BookOpen } from "lucide-react";
+import { LayoutDashboard, Calendar, Plus, Users, BarChart2, Settings, LogOut, Edit, Trash2, Eye, ArrowUpRight, Ticket, User, BookOpen, Search } from "lucide-react";
 import { formatDate, formatPrice } from "../../utils/helpers";
 
 const MOCK_EVENTS = [
@@ -29,6 +30,7 @@ export default function OrganizerDashboard() {
 
   const [events,  setEvents]  = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     axios.get("/api/events/")
@@ -41,11 +43,16 @@ export default function OrganizerDashboard() {
         setLoading(false);
       })
       .catch(() => { setEvents(MOCK_EVENTS); setLoading(false); });
-  , [user?.id]);
+  }, [user?.id]);
 
   const totalSeats   = events.reduce((s, e) => s + (e.total_seats  || 0), 0);
   const totalBooked  = events.reduce((s, e) => s + (e.booked_seats || 0), 0);
   const activeEvents = events.filter(e => new Date(e.date) > new Date()).length;
+
+  const filteredEvents = events.filter(ev => 
+    ev.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (ev.location || ev.venue)?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this event? This cannot be undone.")) return;
@@ -130,14 +137,31 @@ export default function OrganizerDashboard() {
         }}>
           <div style={{
             padding:"1.25rem 1.5rem", borderBottom:"1px solid var(--border)",
-            display:"flex", justifyContent:"space-between", alignItems:"center"
+            display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:"1rem"
           }}>
-            <h3 style={{ fontFamily:"var(--font-display)", fontSize:"1.05rem", letterSpacing:"0.04em", color:"var(--white)" }}>
+            <h3 style={{ fontFamily:"var(--font-display)", fontSize:"1.05rem", letterSpacing:"0.04em", color:"var(--white)", margin:0 }}>
               MY EVENTS
             </h3>
-            <Link to="/organizer/create" className="btn btn-ghost btn-sm" style={{ fontSize:"0.75rem" }}>
-              <Plus size={13} /> Add New
-            </Link>
+            <div style={{ display: "flex", gap: "1rem", flex: "1", justifyContent: "flex-end", alignItems: "center" }}>
+              <div style={{ position: "relative", maxWidth: "250px", width: "100%" }}>
+                <Search size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--color-text-muted)" }} />
+                <input 
+                  type="text" 
+                  placeholder="Search events..." 
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{ 
+                    width: "100%", padding: "0.4rem 1rem 0.4rem 2.2rem", 
+                    borderRadius: "20px", border: "1px solid var(--border)", 
+                    background: "var(--input-bg)", color: "var(--white)", fontSize: "0.85rem",
+                    outline: "none"
+                  }} 
+                />
+              </div>
+              <Link to="/organizer/create" className="btn btn-ghost btn-sm" style={{ fontSize:"0.75rem", whiteSpace: "nowrap" }}>
+                <Plus size={13} /> Add New
+              </Link>
+            </div>
           </div>
           <div className="table-wrap">
             <table className="data-table">
@@ -150,15 +174,15 @@ export default function OrganizerDashboard() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan="6" style={{ textAlign:"center", padding:"2rem", color:"var(--muted)" }}>Loading…</td></tr>
-                ) : events.length === 0 ? (
+                ) : filteredEvents.length === 0 ? (
                   <tr>
                     <td colSpan="6" style={{ textAlign:"center", padding:"3rem" }}>
                       <Calendar size={28} style={{ opacity:.3, display:"block", margin:"0 auto .75rem" }} />
-                      <span style={{ color:"var(--muted)", fontSize:".85rem" }}>No events yet. </span>
-                      <Link to="/organizer/create" style={{ color:"var(--gold)", fontSize:".85rem" }}>Create your first →</Link>
+                      <span style={{ color:"var(--muted)", fontSize:".85rem" }}>No events found. </span>
+                      {searchQuery === "" && <Link to="/organizer/create" style={{ color:"var(--gold)", fontSize:".85rem" }}>Create your first →</Link>}
                     </td>
                   </tr>
-                ) : events.map(ev => {
+                ) : filteredEvents.map(ev => {
                   const status = getEventStatus(ev.date);
                   return (
                     <tr key={ev.id}>
@@ -177,9 +201,9 @@ export default function OrganizerDashboard() {
                           <Link to={`/events/${ev.id}`} className="btn btn-ghost btn-sm" title="View" style={{ padding:"5px 8px" }}>
                             <Eye size={13} />
                           </Link>
-                          <button className="btn btn-ghost btn-sm" title="Edit" style={{ padding:"5px 8px" }}>
+                          <Link to={`/organizer/edit/${ev.id}`} className="btn btn-ghost btn-sm" title="Edit" style={{ padding:"5px 8px" }}>
                             <Edit size={13} />
-                          </button>
+                          </Link>
                           <button
                             className="btn btn-ghost btn-sm"
                             title="Delete"
@@ -207,6 +231,9 @@ export default function OrganizerDashboard() {
             <Users size={15} /> View Registrations <ArrowUpRight size={13} />
           </Link>
         </div>
+      
+        <div style={{ position: "fixed", top: "2rem", right: "2rem", zIndex: 1000 }} className="hide-mobile"><ThemeToggle /></div>
+        <div style={{ position: "fixed", top: "1rem", right: "4rem", zIndex: 1000 }} className="mobile-only-theme-toggle"><ThemeToggle /></div>
       </main>
     </div>
   );
