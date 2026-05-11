@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { loginUser } from "../../api/auth";
 import ThemeToggle from "../../components/ThemeToggle";
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const ROLE_REDIRECT = { user: "/events", organizer: "/organizer", admin: "/admin" };
 
@@ -69,7 +69,7 @@ export default function Login() {
       <div className="auth-visual">
         <Link to="/" className="auth-visual-brand">Event<em>Flow</em></Link>
 
-        <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+        <Motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
           transition={{ duration:0.6, ease:[0.22,1,0.36,1] }}>
           <h2 className="auth-visual-headline">
             Discover.<br />Book.<br /><em>Experience.</em>
@@ -78,9 +78,9 @@ export default function Login() {
             Join 500,000+ event-goers who trust EventFlow to find and book
             the best experiences around the world.
           </p>
-        </motion.div>
+        </Motion.div>
 
-        <motion.div className="auth-stats"
+        <Motion.div className="auth-stats"
           initial={{ opacity:0 }} animate={{ opacity:1 }}
           transition={{ duration:0.6, delay:0.15, ease:[0.22,1,0.36,1] }}>
           {[["10K+","Events"],["500K+","Users"],["98%","Satisfaction"]].map(([n,l]) => (
@@ -89,35 +89,35 @@ export default function Login() {
               <span className="auth-stat-lbl">{l}</span>
             </div>
           ))}
-        </motion.div>
+        </Motion.div>
       </div>
 
       {/* Form panel */}
-      <motion.div className="auth-form-panel" variants={slideIn} initial="hidden" animate="visible">
+      <Motion.div className="auth-form-panel" variants={slideIn} initial="hidden" animate="visible">
         <div style={{ maxWidth:400, width:"100%", margin:"0 auto" }}>
           <Link to="/" className="auth-mobile-brand">Event<em>Flow</em></Link>
 
-          <motion.h2 variants={item} className="auth-form-title">WELCOME BACK</motion.h2>
-          <motion.p variants={item} className="auth-form-sub">
+          <Motion.h2 variants={item} className="auth-form-title">WELCOME BACK</Motion.h2>
+          <Motion.p variants={item} className="auth-form-sub">
             No account?{" "}<Link to="/register">Create one free</Link>
-          </motion.p>
+          </Motion.p>
 
           {justRegistered && (
-            <motion.div variants={item} className="alert alert-success" style={{ marginBottom:"1.25rem" }}>
+            <Motion.div variants={item} className="alert alert-success" style={{ marginBottom:"1.25rem" }}>
               <CheckCircle size={15} /> Account created! Sign in to continue.
-            </motion.div>
+            </Motion.div>
           )}
 
           {error && (
-            <motion.div variants={item} className="alert alert-error" style={{ marginBottom:"1.25rem" }}>
+            <Motion.div variants={item} className="alert alert-error" style={{ marginBottom:"1.25rem" }}>
               <AlertCircle size={15} /> {error}
-            </motion.div>
+            </Motion.div>
           )}
 
-          <motion.form variants={item} onSubmit={submit} className="form-stack">
+          <Motion.form variants={item} onSubmit={submit} className="form-stack">
             <div className="form-group">
               <label className="form-label">Email address</label>
-              <div style={{ position: "relative" }}>
+              <div className="field-wrap">
                 <input
                   name="email" type="email" className="form-control"
                   placeholder="you@example.com"
@@ -134,20 +134,21 @@ export default function Login() {
 
             <div className="form-group">
               <label className="form-label">Password</label>
-              <div style={{ position:"relative" }}>
+              <div className="field-wrap">
                 <input
                   name="password" type={showPw ? "text" : "password"}
-                  className="form-control" placeholder="••••••••"
+                  className="form-control password-control" placeholder="••••••••"
                   value={form.password} onChange={handle} onInvalid={handleInvalid} required
-                  style={{ 
-                    paddingRight:"3rem",
-                    borderColor: fieldErrors.password ? "rgba(248,113,113,0.5)" : undefined
-                  }}
+                  style={{ borderColor: fieldErrors.password ? "rgba(248,113,113,0.5)" : undefined }}
                 />
-                <button type="button" onClick={() => setShowPw(!showPw)} style={{
-                  position:"absolute", right:"1rem", top:"50%",
-                  transform:"translateY(-50%)", color:"var(--muted)"
-                }}>
+                <button
+                  type="button"
+                  className="icon-field-btn"
+                  onClick={() => setShowPw(!showPw)}
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                  aria-pressed={showPw}
+                  title={showPw ? "Hide password" : "Show password"}
+                >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
                 {fieldErrors.password && (
@@ -172,9 +173,9 @@ export default function Login() {
                 : <><ArrowRight size={16} /> Sign In</>
               }
             </button>
-          </motion.form>
+          </Motion.form>
         </div>
-      </motion.div>
+      </Motion.div>
     </div>
   );
 }

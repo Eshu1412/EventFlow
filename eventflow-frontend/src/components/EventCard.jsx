@@ -63,8 +63,7 @@ export default function EventCard({ event, index = 0 }) {
           }
           <Link
             to={`/events/${event._id || event.id}`}
-            className="btn btn-primary btn-sm"
-            style={{ fontSize: "0.75rem", padding: "6px 14px" }}
+            className="btn btn-primary btn-sm btn-card-action"
           >
             Book Now
           </Link>

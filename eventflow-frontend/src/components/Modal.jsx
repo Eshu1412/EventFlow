@@ -1,6 +1,7 @@
 // src/components/Modal.jsx
 import { X } from "lucide-react";
 import { useEffect } from "react";
+import { motion as Motion } from "framer-motion";
 
 export default function Modal({ title, children, onClose, size = "md" }) {
   useEffect(() => {
@@ -11,17 +12,18 @@ export default function Modal({ title, children, onClose, size = "md" }) {
   const widths = { sm: "420px", md: "560px", lg: "720px", xl: "900px" };
 
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(15,23,42,.55)", backdropFilter: "blur(4px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "1rem"
-      }}
+    <Motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       onClick={onClose}
     >
-      <div
-        className="card"
+      <Motion.div
+        className="card modal-content"
+        initial={{ opacity: 0, y: 14, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         style={{ width: "100%", maxWidth: widths[size], maxHeight: "90vh", overflow: "auto" }}
         onClick={e => e.stopPropagation()}
       >
@@ -30,12 +32,12 @@ export default function Modal({ title, children, onClose, size = "md" }) {
           padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--color-border)"
         }}>
           <h3 style={{ fontSize: "1.1rem" }}>{title}</h3>
-          <button className="btn btn-ghost btn-sm" onClick={onClose} style={{ padding: ".4rem" }}>
+          <button className="btn btn-ghost btn-icon" onClick={onClose} aria-label="Close modal">
             <X size={18} />
           </button>
         </div>
         <div style={{ padding: "1.5rem" }}>{children}</div>
-      </div>
-    </div>
+      </Motion.div>
+    </Motion.div>
   );
 }
