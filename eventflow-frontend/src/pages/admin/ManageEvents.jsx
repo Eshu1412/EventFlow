@@ -100,9 +100,14 @@ export default function ManageEvents() {
               {loading ? "Loading…" : `${filtered.length} event${filtered.length !== 1 ? "s" : ""} found`}
             </p>
           </div>
-          <button className="btn btn-outline btn-sm" onClick={exportCSV}>
-            <Download size={15} /> Export CSV
-          </button>
+          <div style={{ display: "flex", gap: ".75rem" }}>
+            <button className="btn btn-outline btn-sm" onClick={exportCSV}>
+              <Download size={15} /> Export CSV
+            </button>
+            <Link to="/organizer/create-event" className="btn btn-primary btn-sm">
+              <Calendar size={13} /> Create Event
+            </Link>
+          </div>
         </div>
 
         {/* Search */}

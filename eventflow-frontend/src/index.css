@@ -3937,3 +3937,70 @@ a:active, select:active {
   transform: scale(0.97) !important;
   transition: transform 0.1s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
+
+/* === PREMIUM ANIMATED PAGINATION === */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 3.5rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--ink-2, rgba(255, 255, 255, 0.02));
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  width: max-content;
+  margin-inline: auto;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.page-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-btn:hover {
+  color: var(--fg);
+  background: rgba(150, 106, 30, 0.12);
+  border-color: var(--border-gold);
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 6px 20px rgba(150, 106, 30, 0.2);
+}
+
+.page-btn.active {
+  color: var(--body-bg);
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.12);
+  box-shadow: 0 0 25px rgba(184, 146, 78, 0.55);
+  font-weight: 700;
+  animation: pageActiveGlow 1.4s infinite alternate ease-in-out;
+}
+
+.page-btn:active {
+  transform: scale(0.92) !important;
+  transition-duration: 0.08s !important;
+}
+
+@keyframes pageActiveGlow {
+  0% { box-shadow: 0 0 5px rgba(184, 146, 78, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(184, 146, 78, 0.65); }
+  100% { box-shadow: 0 0 25px rgba(184, 146, 78, 0.55); }
+}

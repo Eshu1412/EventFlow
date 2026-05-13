@@ -114,18 +114,33 @@ def send_email_via_emailjs(to_email, subject, html_body, text_body="", extra_par
     service_id = getattr(settings, "EMAILJS_SERVICE_ID", "")
     public_key = getattr(settings, "EMAILJS_PUBLIC_KEY", "")
     private_key = getattr(settings, "EMAILJS_PRIVATE_KEY", "")
-    template_id = getattr(settings, "EMAILJS_TEMPLATE_ID", "")
+    
+    reset_template_id = getattr(settings, "EMAILJS_RESET_TEMPLATE_ID", "")
+    default_template_id = getattr(settings, "EMAILJS_TEMPLATE_ID", "")
+    
+    if "reset" in subject.lower() and reset_template_id:
+        template_id = reset_template_id
+    else:
+        template_id = default_template_id
 
-    # Pre-flight check: fail fast if not configured
+    # Fall back to standard SMTP (e.g. Resend) if EmailJS is not configured
     if not all([service_id, public_key, template_id]):
-        msg = (
-            f"EmailJS is not configured. "
-            f"SERVICE_ID={'set' if service_id else 'MISSING'}, "
-            f"PUBLIC_KEY={'set' if public_key else 'MISSING'}, "
-            f"TEMPLATE_ID={'set' if template_id else 'MISSING'}"
-        )
-        logger.error(msg)
-        raise ValueError(msg)
+        logger.info("EmailJS missing config. Falling back to standard SMTP send_mail for %s", to_email)
+        from django.core.mail import send_mail
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "EventFlow <noreply@eventflow.com>")
+        try:
+            send_mail(
+                subject=subject,
+                message=text_body or "Please view this email in an HTML-compatible client.",
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_body,
+                fail_silently=False,
+            )
+            return True
+        except Exception as e:
+            logger.error("SMTP send_mail failed for %s: %s", to_email, e)
+            raise
 
     template_params = {
         "to_email": to_email,

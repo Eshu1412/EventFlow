@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
     'corsheaders',
     'api.apps.ApiConfig',
 ]
@@ -157,16 +156,10 @@ AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.supabase_auth.SupabaseJWTAuthentication',
     )
 }
 
-from datetime import timedelta
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -180,12 +173,22 @@ CORS_ALLOW_ALL_ORIGINS = True
 #   EMAILJS_TEMPLATE_ID  — Template with: to_email, subject, message_html vars
 #   FRONTEND_URL         — your Vercel frontend URL
 # ───────────────────────────────────────────────────────────────────────────────
-EMAIL_BACKEND        = "api.email_backend.EmailJSBackend"
 EMAILJS_SERVICE_ID   = os.environ.get("EMAILJS_SERVICE_ID", "")
 EMAILJS_PUBLIC_KEY   = os.environ.get("EMAILJS_PUBLIC_KEY", "")
 EMAILJS_PRIVATE_KEY  = os.environ.get("EMAILJS_PRIVATE_KEY", "")
 EMAILJS_TEMPLATE_ID  = os.environ.get("EMAILJS_TEMPLATE_ID", "")
+EMAILJS_RESET_TEMPLATE_ID = os.environ.get("EMAILJS_RESET_TEMPLATE_ID", "")
 DEFAULT_FROM_EMAIL   = os.environ.get("DEFAULT_FROM_EMAIL", "EventFlow <noreply@eventflow.com>")
+
+if EMAILJS_SERVICE_ID and EMAILJS_PUBLIC_KEY:
+    EMAIL_BACKEND = "api.email_backend.EmailJSBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.resend.com")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "resend")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() in ("true", "1", "yes")
 
 # Base URL of the React frontend (used in password-reset email links)
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")

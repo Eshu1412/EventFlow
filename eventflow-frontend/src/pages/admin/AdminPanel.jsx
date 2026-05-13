@@ -144,7 +144,7 @@ export default function AdminPanel() {
                         <td><span className={`tag ${ROLE_TAG[u.role]||"tag-muted"}`}>{u.role}</span></td>
                         <td>
                           <div style={{ display:"flex", gap:".4rem" }}>
-                            <button className="btn btn-ghost btn-sm" style={{ fontSize:".78rem" }}>Edit</button>
+                            <Link to="/admin/users" className="btn btn-ghost btn-sm" style={{ fontSize:".78rem" }}>Edit</Link>
                             <button className="btn btn-ghost btn-sm" style={{ fontSize:".78rem", color:"#f87171" }} onClick={() => deleteUser(u.id)}>Delete</button>
                           </div>
                         </td>

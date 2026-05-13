@@ -299,18 +299,138 @@ def send_ticket_email(booking) -> None:
         f"Booking ID: #{booking.id:06d}\n"
         f"Quantity: {booking.quantity}\n"
         f"Price: {price_str}\n\n"
+        f"View your bookings: {frontend_url}/my-bookings\n\n"
         f"You can download your PDF ticket from the EventFlow app."
     )
+    
+    html_msg = f"""<p>Hi {user.name or user.email},</p>
+<p>Your booking for <strong>{event.title}</strong> has been confirmed!</p>
+<ul>
+    <li><strong>Event:</strong> {event.title}</li>
+    <li><strong>Date:</strong> {event_date_str or 'TBA'}</li>
+    <li><strong>Venue:</strong> {event.location or 'TBA'}</li>
+    <li><strong>Booking ID:</strong> #{booking.id:06d}</li>
+    <li><strong>Quantity:</strong> {booking.quantity}</li>
+    <li><strong>Price:</strong> {price_str}</li>
+</ul>
+<p><a href="{frontend_url}/my-bookings" style="display:inline-block;padding:10px 20px;background-color:#17a2b8;color:#fff;text-decoration:none;border-radius:5px;">View Bookings</a></p>
+<p>Or visit: <a href="{frontend_url}/my-bookings">{frontend_url}/my-bookings</a></p>
+<p><small>You can download your PDF ticket directly from the app.</small></p>"""
 
     send_email_via_emailjs(
         to_email=user.email,
         subject=f"Your EventFlow Ticket - {event.title}",
-        html_body="",
+        html_body=html_msg,
         text_body=description,
         extra_params={
             "title": "Your ticket is ready!",
             "description": description,
             "link": f"{frontend_url}/my-bookings",
+            "url": f"{frontend_url}/my-bookings",
+            "button_text": "View Ticket",
+        },
+    )
+
+
+# ── Supabase-compatible versions (accept dicts instead of model instances) ───
+
+def generate_ticket_pdf_supabase(bk_dict, user) -> io.BytesIO:
+    """Wrapper that converts Supabase booking dict to a mock object for PDF gen."""
+    evt = bk_dict.get("events", {}) or {}
+    usr_data = bk_dict.get("users", {}) or {}
+
+    class _Evt:
+        id = bk_dict.get("event_id")
+        title = evt.get("title", "Event")
+        description = ""
+        category = evt.get("category", "Event")
+        location = evt.get("location", "TBA")
+        date = evt.get("date")
+        price = evt.get("price", 0)
+
+    class _User:
+        id = user.id
+        name = user.name or usr_data.get("name", "")
+        email = user.email or usr_data.get("email", "")
+
+    class _Booking:
+        id = bk_dict.get("id", 0)
+        quantity = bk_dict.get("quantity", 1)
+        status = bk_dict.get("status", "confirmed")
+        event = _Evt()
+        user = _User()
+
+    # Parse date string if needed
+    if isinstance(_Booking.event.date, str):
+        from dateutil.parser import parse as dtparse
+        try:
+            _Booking.event.date = dtparse(_Booking.event.date)
+        except Exception:
+            pass
+
+    return generate_ticket_pdf(_Booking())
+
+
+def send_ticket_email_supabase(bk_dict, user) -> None:
+    """Wrapper that sends ticket email using Supabase booking dict."""
+    from django.conf import settings
+    from .email_backend import send_email_via_emailjs
+
+    evt = bk_dict.get("events", {}) or {}
+
+    event_date_str = ""
+    raw_date = evt.get("date")
+    if raw_date:
+        from dateutil.parser import parse as dtparse
+        try:
+            dt = dtparse(raw_date) if isinstance(raw_date, str) else raw_date
+            event_date_str = dt.strftime("%d %B %Y at %I:%M %p")
+        except Exception:
+            event_date_str = str(raw_date)
+
+    price = evt.get("price", 0) or 0
+    qty = bk_dict.get("quantity", 1)
+    price_str = "FREE" if not price else f"Rs.{price * qty:,.2f}"
+    frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:5173")
+    title = evt.get("title", "Event")
+    booking_id = bk_dict.get("id", 0)
+
+    description = (
+        f"Hi {user.name or user.email}, your booking for {title} has been confirmed!\n\n"
+        f"Event: {title}\n"
+        f"Date: {event_date_str or 'TBA'}\n"
+        f"Venue: {evt.get('location', 'TBA')}\n"
+        f"Booking ID: #{booking_id:06d}\n"
+        f"Quantity: {qty}\n"
+        f"Price: {price_str}\n\n"
+        f"View your bookings: {frontend_url}/my-bookings\n\n"
+        f"You can download your PDF ticket from the EventFlow app."
+    )
+    
+    html_msg = f"""<p>Hi {user.name or user.email},</p>
+<p>Your booking for <strong>{title}</strong> has been confirmed!</p>
+<ul>
+    <li><strong>Event:</strong> {title}</li>
+    <li><strong>Date:</strong> {event_date_str or 'TBA'}</li>
+    <li><strong>Venue:</strong> {evt.get('location', 'TBA')}</li>
+    <li><strong>Booking ID:</strong> #{booking_id:06d}</li>
+    <li><strong>Quantity:</strong> {qty}</li>
+    <li><strong>Price:</strong> {price_str}</li>
+</ul>
+<p><a href="{frontend_url}/my-bookings" style="display:inline-block;padding:10px 20px;background-color:#17a2b8;color:#fff;text-decoration:none;border-radius:5px;">View Bookings</a></p>
+<p>Or visit: <a href="{frontend_url}/my-bookings">{frontend_url}/my-bookings</a></p>
+<p><small>You can download your PDF ticket directly from the app.</small></p>"""
+
+    send_email_via_emailjs(
+        to_email=user.email,
+        subject=f"Your EventFlow Ticket - {title}",
+        html_body=html_msg,
+        text_body=description,
+        extra_params={
+            "title": "Your ticket is ready!",
+            "description": description,
+            "link": f"{frontend_url}/my-bookings",
+            "url": f"{frontend_url}/my-bookings",
             "button_text": "View Ticket",
         },
     )

@@ -3,7 +3,7 @@ import ThemeToggle from "../../components/ThemeToggle";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut, Search, Download, Ticket, User, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, BarChart, Settings, LogOut, Search, Download, Ticket, User, BookOpen, Trash2, RefreshCw } from "lucide-react";
 import axios from "axios";
 
 const authHeaders = () => ({
@@ -31,6 +31,26 @@ export default function ManageBookings() {
       .catch(() => setBookings(MOCK))
       .finally(() => setLoading(false));
   }, []);
+
+  const toggleStatus = async (id, currentStatus) => {
+    const nextStatus = currentStatus === "confirmed" ? "cancelled" : "confirmed";
+    try {
+      await axios.patch(`/api/admin/bookings/${id}/`, { status: nextStatus }, authHeaders());
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: nextStatus } : b));
+    } catch {
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: nextStatus } : b));
+    }
+  };
+
+  const deleteBooking = async (id) => {
+    if (!window.confirm("Permanently delete this booking record?")) return;
+    try {
+      await axios.delete(`/api/admin/bookings/${id}/`, authHeaders());
+      setBookings(prev => prev.filter(b => b.id !== id));
+    } catch {
+      setBookings(prev => prev.filter(b => b.id !== id));
+    }
+  };
 
   const filtered = bookings.filter(b =>
     (b.user_name  || "").toLowerCase().includes(search.toLowerCase()) ||
@@ -128,14 +148,15 @@ export default function ManageBookings() {
                     <th>Event Title</th>
                     <th>Status</th>
                     <th>Booked At</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan="5" style={{ textAlign: "center", padding: "2rem", color: "var(--color-text-muted)" }}>Loading…</td></tr>
+                    <tr><td colSpan="6" style={{ textAlign: "center", padding: "2rem", color: "var(--color-text-muted)" }}>Loading…</td></tr>
                   ) : filtered.length === 0 ? (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center", padding: "2.5rem", color: "var(--color-text-muted)" }}>
+                      <td colSpan="6" style={{ textAlign: "center", padding: "2.5rem", color: "var(--color-text-muted)" }}>
                         <Ticket size={32} style={{ marginBottom: ".75rem", opacity: .3, display: "block", margin: "0 auto .75rem" }} />
                         No bookings matching &ldquo;{search}&rdquo;
                       </td>
@@ -152,6 +173,26 @@ export default function ManageBookings() {
                       </td>
                       <td style={{ fontSize: ".82rem", color: "var(--color-text-muted)" }}>
                         {new Date(b.booked_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                      </td>
+                      <td>
+                        <div style={{ display: "flex", gap: ".4rem" }}>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            title="Toggle Status"
+                            style={{ padding: "5px 8px" }}
+                            onClick={() => toggleStatus(b.id, b.status)}
+                          >
+                            <RefreshCw size={13} />
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            title="Delete Booking"
+                            style={{ padding: "5px 8px", color: "#f87171" }}
+                            onClick={() => deleteBooking(b.id)}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

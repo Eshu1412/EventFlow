@@ -307,7 +307,7 @@ export default function EventList() {
 
           {/* ── Real event cards ── */}
           {!loading && !error && paginated.length > 0 && (
-            <div className="grid-3">
+            <div className="grid-3" key={page}>
               {paginated.map((ev, i) => (
                 <EventCard key={ev.id || ev._id || i} event={ev} index={i} />
               ))}
@@ -316,7 +316,7 @@ export default function EventList() {
 
           {/* ── Pagination ── */}
           {!loading && pages > 1 && (
-            <div className="pagination" style={{ marginTop: "2.5rem" }}>
+            <div className="pagination">
               {Array.from({ length: pages }, (_, i) => (
                 <button
                   key={i}

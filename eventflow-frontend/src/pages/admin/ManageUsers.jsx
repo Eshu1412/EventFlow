@@ -161,7 +161,16 @@ export default function ManageUsers() {
                     </td>
                     <td>
                       <div style={{ display: "flex", gap: ".4rem" }}>
-                        <button className="btn btn-ghost btn-sm" title="Change Role" style={{ fontSize: ".78rem" }}>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          title="Cycle Role"
+                          style={{ fontSize: ".78rem" }}
+                          onClick={() => {
+                            const roles = ["user", "organizer", "admin"];
+                            const next = roles[(roles.indexOf(u.role) + 1) % roles.length];
+                            changeRole(u.id, next);
+                          }}
+                        >
                           <Shield size={13} />
                         </button>
                         <button
